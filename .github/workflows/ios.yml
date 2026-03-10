@@ -36,9 +36,13 @@ jobs:
 
           echo "----------------------------------"
           echo "Using $ENV_FILE"
-          export $(grep -v '^#' $ENV_FILE | xargs)
-          echo "BASE_URL=$BASE_URL" >> $GITHUB_ENV
-          echo "API_TOKEN=$API_TOKEN" >> $GITHUB_ENV
+          while read -r line; do
+            if [[ $line == BASE_URL=* ]]; then
+              echo "$line" >> $GITHUB_ENV
+            elif [[ $line == API_TOKEN=* ]]; then
+              echo "$line" >> $GITHUB_ENV
+            fi
+          done < $ENV_FILE
       - name: Set Default Scheme
         run: |
           scheme_list=$(xcodebuild -list -json | tr -d "\n")
