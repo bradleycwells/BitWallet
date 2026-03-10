@@ -2,13 +2,19 @@ name: iOS starter workflow
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - "**" # Runs on all branches!
   pull_request:
-    branches: [ "main" ]
-
+    branches-ignore:
+      - master
+      - deployment-next # Ignore PRs merging into these branches!
 jobs:
   build:
-    name: Build and Test default scheme using any available iPhone simulator
+    if: |
+      contains(github.event.head_commit.message, 'ios-dev') || 
+      contains(github.event.head_commit.message, 'ios-qa') ||
+      contains(github.event.head_commit.message, 'ios-prod')
+    name: Build iOS - ${{ github.event.head_commit.message }}
     runs-on: macos-latest
 
     steps:
