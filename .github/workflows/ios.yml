@@ -38,13 +38,10 @@ jobs:
           echo "Using $ENV_FILE"
           echo "----------------------------------"
           echo "Loading environment variables from $ENV_FILE"
-          while read -r line; do
-            if [[ $line == BASE_URL=* ]]; then
-              echo "$line" >> $GITHUB_ENV
-            elif [[ $line == API_TOKEN=* ]]; then
-              echo "$line" >> $GITHUB_ENV
-            fi
-          done < $ENV_FILE
+          BASE_URL=$(grep '^BASE_URL=' "$ENV_FILE" | cut -d '=' -f2- | xargs)
+          API_TOKEN=$(grep '^API_TOKEN=' "$ENV_FILE" | cut -d '=' -f2- | xargs)
+          echo "BASE_URL=$BASE_URL" >> $GITHUB_ENV
+          echo "API_TOKEN=$API_TOKEN" >> $GITHUB_ENV
           echo "----------------------------------"
       - name: Set Default Scheme
         run: |
