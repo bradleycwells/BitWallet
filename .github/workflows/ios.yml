@@ -33,6 +33,8 @@ jobs:
             echo "No matching env file for commit message"
             exit 1
           fi
+
+          echo "----------------------------------"
           echo "Using $ENV_FILE"
           export $(grep -v '^#' $ENV_FILE | xargs)
           echo "BASE_URL=$BASE_URL" >> $GITHUB_ENV
