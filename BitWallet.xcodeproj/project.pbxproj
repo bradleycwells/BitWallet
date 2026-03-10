@@ -29,9 +29,23 @@
 		ECF5E5D92F5F0D360024512B /* BitWalletUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BitWalletUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		EC723CB12F60435E00599D38 /* Exceptions for "BitWallet" folder in "BitWallet" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Config/AppConfig.swift,
+				"Config/Local​Config​.swift",
+			);
+			target = ECF5E5C12F5F0D340024512B /* BitWallet */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		ECF5E5C42F5F0D340024512B /* BitWallet */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				EC723CB12F60435E00599D38 /* Exceptions for "BitWallet" folder in "BitWallet" target */,
+			);
 			path = BitWallet;
 			sourceTree = "<group>";
 		};

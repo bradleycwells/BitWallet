@@ -7,11 +7,12 @@ protocol Endpoint {
 
 extension Endpoint {
     var url: URL? {
-        var components = URLComponents()
-        components.scheme = "https"
-        components.host = "api.apilayer.com"
-        // Compose the full path here
-        components.path = "/fixer/" + path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard let base = URL(string: AppConfig.apiBaseURL),
+              var components = URLComponents(url: base, resolvingAgainstBaseURL: false) else {
+            return nil
+        }
+        let sanitized = path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        components.path = base.path.appending("/\(sanitized)")
         components.queryItems = queryItems
         return components.url
     }
