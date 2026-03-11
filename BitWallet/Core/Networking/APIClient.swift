@@ -5,13 +5,16 @@ protocol APIClient {
 }
 
 class DefaultAPIClient: APIClient {
-    func request<T>(endpoint: Endpoint, headerToken: String = AppConfig.apiToken) async throws -> T where T : Decodable {
+    func request<T>(endpoint: Endpoint, headerToken: String) async throws -> T where T : Decodable {
+        // If no header token provided, fallback to AppConfig.apiToken from MainActor
+        let resolvedToken: String = headerToken.isEmpty ? await MainActor.run { AppConfig.apiToken } : headerToken
+        
         guard let url = endpoint.url else {
             throw NetworkError.invalidURL
         }
 
         var request = URLRequest(url: url)
-        request.setValue(headerToken, forHTTPHeaderField: "apikey")
+        request.setValue(resolvedToken, forHTTPHeaderField: "apikey")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.httpMethod = "GET"
         
@@ -31,3 +34,4 @@ class DefaultAPIClient: APIClient {
         }
     }
 }
+
