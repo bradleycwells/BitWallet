@@ -8,7 +8,7 @@ struct WalletView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 20) {
                 // Input Section
                 VStack(alignment: .leading, spacing: 10) {
