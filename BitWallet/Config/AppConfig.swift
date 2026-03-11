@@ -21,6 +21,7 @@ enum AppConfig {
         if let env = ProcessInfo.processInfo.environment["API_TOKEN"], !env.isEmpty {
             return env
         }
+        // No fallback; fail if not set
         fatalError("API_TOKEN not set in LocalConfig or environment")
     }()
 }
