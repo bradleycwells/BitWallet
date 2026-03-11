@@ -6,15 +6,21 @@ enum AppConfig {
         if let local = LocalConfig.apiBaseURL, !local.isEmpty {
             return local
         }
-        // Final fallback (ensure it matches your production base path)
-        return "https://api.apilayer.com/fixer"
+        // Use environment variable if present
+        if let env = ProcessInfo.processInfo.environment["BASE_URL"], !env.isEmpty {
+            return env
+        }
+        // No fallback; fail if not set
+        fatalError("BASE_URL not set in LocalConfig or environment")
     }()
 
     static let apiToken: String = {
         if let local = LocalConfig.apiToken, !local.isEmpty {
             return local
         }
-        // Final fallback; keep empty by default
-        return ""
+        if let env = ProcessInfo.processInfo.environment["API_TOKEN"], !env.isEmpty {
+            return env
+        }
+        fatalError("API_TOKEN not set in LocalConfig or environment")
     }()
 }
