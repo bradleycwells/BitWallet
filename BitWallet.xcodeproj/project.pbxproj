@@ -30,13 +30,21 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		EC723CB12F60435E00599D38 /* Exceptions for "BitWallet" folder in "BitWallet" target */ = {
+		ECC325AA2F614F1500507FE7 /* Exceptions for "BitWallet" folder in "BitWalletTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Config/AppConfig.swift,
 				"Config/Local​Config​.swift",
 			);
-			target = ECF5E5C12F5F0D340024512B /* BitWallet */;
+			target = ECF5E5CE2F5F0D360024512B /* BitWalletTests */;
+		};
+		ECC325AB2F614F1500507FE7 /* Exceptions for "BitWallet" folder in "BitWalletUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Config/AppConfig.swift,
+				"Config/Local​Config​.swift",
+			);
+			target = ECF5E5D82F5F0D360024512B /* BitWalletUITests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -44,7 +52,8 @@
 		ECF5E5C42F5F0D340024512B /* BitWallet */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				EC723CB12F60435E00599D38 /* Exceptions for "BitWallet" folder in "BitWallet" target */,
+				ECC325AA2F614F1500507FE7 /* Exceptions for "BitWallet" folder in "BitWalletTests" target */,
+				ECC325AB2F614F1500507FE7 /* Exceptions for "BitWallet" folder in "BitWalletUITests" target */,
 			);
 			path = BitWallet;
 			sourceTree = "<group>";
