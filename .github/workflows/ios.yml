@@ -83,4 +83,18 @@ jobs:
           if [ $scheme = default ]; then scheme=$(cat default); fi
           if [ "`ls -A | grep -i \\.xcworkspace$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=iOS Simulator,name=iPhone 16" -only-testing:BitWalletTests -derivedDataPath "$DERIVED_DATA"
+          xcodebuild test-wi$thout-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=iOS Simulator,name=iPhone 16" -only-testing:BitWalletTests -derivedDataPath "$DERIVED_DATA"
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts
+          path: |
+            ./DerivedData/Build/Products/Debug-iphonesimulator/BitWallet.app
+            ./DerivedData/Logs/Test
+      - name: Send Email Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          from: bradley.c.wells@example.com
+          to: recipient-email@example.com
+          subject: "Build Artifacts Available"
+          body: "Your build artifacts are ready for download from the GitHub Actions run. Please visit the Actions page for this workflow to download the build-artifacts."
