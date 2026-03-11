@@ -39,9 +39,8 @@ jobs:
           echo "----------------------------------"
           echo "Loading environment variables from $ENV_FILE"
           BASE_URL=$(grep '^BASE_URL=' "$ENV_FILE" | cut -d '=' -f2- | xargs)
-          API_TOKEN=$(grep '^API_TOKEN=' "$ENV_FILE" | cut -d '=' -f2- | xargs)
           echo "BASE_URL=$BASE_URL" >> $GITHUB_ENV
-          echo "API_TOKEN=$API_TOKEN" >> $GITHUB_ENV
+          echo "API_TOKEN=${{ secrets.API_TOKEN }}" >> $GITHUB_ENV
           echo "----------------------------------"
       - name: Set Default Scheme
         run: |
@@ -73,7 +72,6 @@ jobs:
           API_TOKEN: ${{ env.API_TOKEN }}
         run: |
           echo "BASE_URL: $BASE_URL"
-          echo "API_TOKEN: $API_TOKEN"
           DERIVED_DATA=./DerivedData
           xcrun simctl shutdown all
           xcrun simctl erase all
