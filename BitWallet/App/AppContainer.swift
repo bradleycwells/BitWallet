@@ -13,6 +13,7 @@ final class AppContainer {
         let envToken = ProcessInfo.processInfo.environment["API_TOKEN"]
         // Fallback to AppConfig.apiToken on MainActor if env var is not set
         let token: String = envToken ?? (try? MainActor.assumeIsolated { AppConfig.apiToken }) ?? ""
+        print("token --------- ",token)
         return DefaultFixerService(apiClient: apiClient, token: token)
     }() // Or load from Plist/Env
     

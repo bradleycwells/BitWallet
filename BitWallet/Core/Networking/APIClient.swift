@@ -18,8 +18,6 @@ class DefaultAPIClient: APIClient {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.httpMethod = "GET"
         
-        print("➡️ Request URL:", url.absoluteString)
-        
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse,
