@@ -3,7 +3,7 @@ import Foundation
 struct LatestRatesEndpoint: Endpoint {
     let base: CurrencyCode
     let symbols: [CurrencyCode]
-    
+    let method: HTTPMethod = .get
     var path: String { "latest" }
     
     var queryItems: [URLQueryItem]? {

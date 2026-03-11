@@ -1,5 +1,9 @@
 import Foundation
 
+// Lightweight protocols to read HTTP method from Endpoint without reflection
+private protocol HasHTTPMethodString { var httpMethod: String? { get } }
+private protocol HasHTTPMethodEnum { associatedtype HTTPMethodEnum: RawRepresentable where HTTPMethodEnum.RawValue == String; var method: HTTPMethodEnum? { get } }
+
 protocol APIClient {
     func request<T: Decodable>(endpoint: Endpoint, headerToken: String) async throws -> T
 }
@@ -16,7 +20,8 @@ class DefaultAPIClient: APIClient {
         var request = URLRequest(url: url)
         request.setValue(resolvedToken, forHTTPHeaderField: "apikey")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.httpMethod = "GET"
+        // Use HTTP method from Endpoint, default to GET
+        request.httpMethod = endpoint.method.rawValue
         
         let (data, response) = try await URLSession.shared.data(for: request)
 
