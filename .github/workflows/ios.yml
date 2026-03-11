@@ -3,11 +3,12 @@ name: BitWallet iOS build and test
 on:
   push:
     branches:
-      - "**" # Runs on all branches!
+      - "**"
   pull_request:
     branches-ignore:
       - master
-      - deployment-next # Ignore PRs merging into these branches!
+      - deployment-next
+
 jobs:
   build:
     if: |
@@ -17,9 +18,17 @@ jobs:
     name: Build iOS - ${{ github.event.head_commit.message }}
     runs-on: macos-latest
 
+    env:
+      DERIVED_DATA: ${{ github.workspace }}/DerivedData
+      PLATFORM: iOS Simulator
+      RUNTIME: com.apple.CoreSimulator.SimRuntime.iOS-26-2
+      DEVICE_TYPE: com.apple.CoreSimulator.SimDeviceType.iPhone-16
+      DEVICE_NAME: CI iPhone 16
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Load Environment Variables
         id: load_env
         run: |
@@ -42,61 +51,86 @@ jobs:
           echo "BASE_URL=$BASE_URL" >> $GITHUB_ENV
           echo "API_TOKEN=${{ secrets.API_TOKEN }}" >> $GITHUB_ENV
           echo "----------------------------------"
-      - name: Set Default Scheme
+
+      - name: Resolve Scheme and Project/Workspace
         run: |
           scheme_list=$(xcodebuild -list -json | tr -d "\n")
-          default=$(echo $scheme_list | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['project']['targets'][0]")
-          echo $default | cat >default
-          echo Using default scheme: $default
-      - name: Build
+          default=$(echo "$scheme_list" | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['project']['targets'][0]")
+          echo "$default" > default
+          echo "Using default scheme: $(cat default)"
+
+          if ls -A | grep -iq "\.xcworkspace$"; then
+            echo "filetype_parameter=workspace" >> $GITHUB_ENV
+            echo "file_to_build=$(ls -A | grep -i '\.xcworkspace$' | head -1 | xargs)" >> $GITHUB_ENV
+          else
+            echo "filetype_parameter=project" >> $GITHUB_ENV
+            echo "file_to_build=$(ls -A | grep -i '\.xcodeproj$' | head -1 | xargs)" >> $GITHUB_ENV
+          fi
+
+      - name: Prepare Simulator
+        run: |
+          xcrun simctl shutdown all || true
+          xcrun simctl erase all || true
+          xcrun simctl delete unavailable || true
+          # Create device if it doesn't exist
+          if ! xcrun simctl list devices | grep -q "${DEVICE_NAME}"; then
+            xcrun simctl create "${DEVICE_NAME}" "${DEVICE_TYPE}" "${RUNTIME}"
+          fi
+          xcrun simctl boot "${DEVICE_NAME}" || true
+          xcrun simctl bootstatus "${DEVICE_NAME}" -b
+          echo "DESTINATION=platform=${PLATFORM},name=${DEVICE_NAME}" >> $GITHUB_ENV
+
+      - name: Build for Testing
         env:
-          scheme: ${{ 'default' }}
-          platform: ${{ 'iOS Simulator' }}
           BASE_URL: ${{ env.BASE_URL }}
           API_TOKEN: ${{ env.API_TOKEN }}
         run: |
           echo "BASE_URL: $BASE_URL"
           echo "API_TOKEN: $API_TOKEN"
-          DERIVED_DATA=./DerivedData
-          # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
-          device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}' | sed -e "s/ Simulator$//"`
-          if [ $scheme = default ]; then scheme=$(cat default); fi
-          if [ "`ls -A | grep -i \\.xcworkspace$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj$`"; fi
-          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
-          xcodebuild build-for-testing -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -derivedDataPath "$DERIVED_DATA"
-      - name: Test
+
+          scheme=$(cat default)
+          echo "Building scheme: $scheme"
+          echo "File: $file_to_build ($filetype_parameter)"
+          echo "DerivedData: $DERIVED_DATA"
+          echo "Destination: $DESTINATION"
+
+          xcodebuild \
+            -"$filetype_parameter" "$file_to_build" \
+            -scheme "$scheme" \
+            -destination "$DESTINATION" \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -derivedDataPath "$DERIVED_DATA" \
+            clean build-for-testing
+
+      - name: Test without Building
         env:
-          scheme: ${{ 'default' }}
-          platform: ${{ 'iOS Simulator' }}
           BASE_URL: ${{ env.BASE_URL }}
           API_TOKEN: ${{ env.API_TOKEN }}
         run: |
-          # List available devices
-          xcrun xctrace list devices
-
-          device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}' | sed -e "s/ Simulator$//"`
-          echo "Using device: $device"
-
-          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
-          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
           scheme=$(cat default)
+          echo "Testing scheme: $scheme"
+          echo "File: $file_to_build ($filetype_parameter)"
+          echo "DerivedData: $DERIVED_DATA"
+          echo "Destination: $DESTINATION"
 
-          # Boot simulator if needed
-          xcrun simctl boot "$device" || true
-          sleep 5
+          # Ensure simulator is booted
+          xcrun simctl boot "${DEVICE_NAME}" || true
+          xcrun simctl bootstatus "${DEVICE_NAME}" -b
 
-          xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device" -derivedDataPath "$DERIVED_DATA"
+          xcodebuild \
+            -"$filetype_parameter" "$file_to_build" \
+            -scheme "$scheme" \
+            -destination "$DESTINATION" \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -derivedDataPath "$DERIVED_DATA" \
+            test-without-building
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: |
-            ./DerivedData/Build/Products/Debug-iphonesimulator/BitWallet.app
-            ./DerivedData/Logs/Test
-      - name: Send Email Notification
-        uses: dawidd6/action-send-mail@v3
-        with:
-          from: bradley.c.wells@example.com
-          to: recipient-email@example.com
-          subject: "Build Artifacts Available"
-          body: "Your build artifacts are ready for download from the GitHub Actions run. Please visit the Actions page for this workflow to download the build-artifacts."
+            ${{ env.DERIVED_DATA }}/Build/Products/Debug-iphonesimulator/*.app
+            ${{ env.DERIVED_DATA }}/Logs/Test
