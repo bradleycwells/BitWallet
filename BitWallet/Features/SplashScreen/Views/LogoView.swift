@@ -2,27 +2,57 @@ import SwiftUI
 
 struct LogoView: View {
     @Binding var animate: Bool
+    @State private var displayedText: String = ""
+    private let words: [String] = ["ZAR", "USD", "AUSD", "BTC", "Bit"]
+    @State private var isAnimatingText = false
+    private let charWait: UInt64 = 140_000_000 // 0.2 seconds
+    private let wordWait: UInt64 = 500_000_000 // 0.5 seconds
 
     var body: some View {
         HStack {
             Text("🚀")
                 .font(.system(size: 30))
-                .scaleEffect(animate ? 1.2 : 1.0)
-                .opacity(animate ? 1.0 : 0.5)
-                .animation(.easeInOut(duration: 3.0), value: animate)
-            Text("BitWallet")
+            Text(displayedText.isEmpty ? "" : displayedText + "Wallet")
                 .font(.largeTitle)
                 .bold()
-                .opacity(animate ? 1.0 : 0.5)
-                .animation(.easeInOut(duration: 3.0), value: animate)
         }
+        .onTapGesture {
+            Task {
+                await animateText()
+            }
+        }
+        .task {
+            await animateText()
+        }
+    }
+
+    func animateText() async {
+        if isAnimatingText { return }
+        isAnimatingText = true
+        await MainActor.run { displayedText = "" }
+        for (index, word) in words.enumerated() {
+            var current = ""
+            for ch in word {
+                current.append(ch)
+                await MainActor.run {
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        displayedText = current
+                    }
+                }
+                try? await Task.sleep(nanoseconds: charWait)
+            }
+            if index < words.count - 1 {
+                try? await Task.sleep(nanoseconds: wordWait)
+            }
+        }
+        isAnimatingText = false
     }
 }
 
+
 #Preview {
-    StatefulPreviewWrapper(false) { animate in
-        LogoView(animate: animate)
-            .padding()
+    StatefulPreviewWrapper(false) { binding in
+        LogoView(animate: binding)
     }
 }
 
@@ -40,3 +70,4 @@ struct StatefulPreviewWrapper<Value, Content: View>: View {
         content($value)
     }
 }
+
