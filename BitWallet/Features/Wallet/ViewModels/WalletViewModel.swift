@@ -29,7 +29,7 @@ class WalletViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            let rates = try await fixerService.fetchLatestRates(base: .btc, symbols: [.zar, .usd, .aud])
+            let rates = try await fixerService.fetchLatestRates(base: .BTC , symbols: [.ZAR, .USD, .AUD])
             self.currentRates = rates
             calculateValues()
         } catch {
@@ -40,7 +40,7 @@ class WalletViewModel: ObservableObject {
     
     private func calculateValues() {
         var newValues: [CurrencyValue] = []
-        for code in [CurrencyCode.zar, CurrencyCode.usd, CurrencyCode.aud] {
+        for code in [CurrencyCode.ZAR, CurrencyCode.USD, CurrencyCode.AUD] {
             if let rate = currentRates[code] {
                 let total = rate * bitcoinAmount
                 newValues.append(CurrencyValue(code: code, rate: rate, totalValue: total))

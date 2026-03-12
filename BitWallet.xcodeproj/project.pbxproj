@@ -35,6 +35,7 @@
 			membershipExceptions = (
 				Config/AppConfig.swift,
 				"Config/Local​Config​.swift",
+				Core/Constants/CurrencySymbols.swift,
 			);
 			target = ECF5E5CE2F5F0D360024512B /* BitWalletTests */;
 		};
@@ -43,6 +44,7 @@
 			membershipExceptions = (
 				Config/AppConfig.swift,
 				"Config/Local​Config​.swift",
+				Core/Constants/CurrencySymbols.swift,
 			);
 			target = ECF5E5D82F5F0D360024512B /* BitWalletUITests */;
 		};
