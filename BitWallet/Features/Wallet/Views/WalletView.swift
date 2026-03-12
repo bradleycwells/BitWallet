@@ -60,7 +60,11 @@ struct WalletView: View {
                     .listStyle(PlainListStyle())
                 }
             }
-            .navigationTitle("BitWallet")
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    LogoView(animate: .constant(false))
+                }
+            }
             .task {
                 await viewModel.fetchRates()
             }
