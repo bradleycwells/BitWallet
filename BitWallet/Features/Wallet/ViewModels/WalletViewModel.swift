@@ -26,7 +26,7 @@ class WalletViewModel: ObservableObject {
     }
     
     func fetchRates(forceRefresh: Bool = false) async {
-        isLoading = true
+        if (!forceRefresh){isLoading = true}
         errorMessage = nil
         do {
             let rates = try await fixerService.fetchLatestRates(base: .BTC , symbols: [.ZAR, .USD, .AUD], forceRefresh: forceRefresh)
