@@ -31,12 +31,14 @@ class APIRateCacheManager {
         defaults.set(Date(), forKey: timestampKey)
     }
     
-    func getOrFetchRates(endpoint: String, base: String, symbols: [String], fetchBlock: () async throws -> [String: Double]) async throws -> [String: Double] {
-        let (cachedRates, cachedDate) = getRates(endpoint: endpoint, base: base, symbols: symbols)
-        if let cachedRates = cachedRates, let cachedDate = cachedDate {
-            let calendar = Calendar.current
-            if calendar.isDateInToday(cachedDate) {
-                return cachedRates
+    func getOrFetchRates(endpoint: String, base: String, symbols: [String], forceRefresh: Bool = false, fetchBlock: () async throws -> [String: Double]) async throws -> [String: Double] {
+        if !forceRefresh {
+            let (cachedRates, cachedDate) = getRates(endpoint: endpoint, base: base, symbols: symbols)
+            if let cachedRates = cachedRates, let cachedDate = cachedDate {
+                let calendar = Calendar.current
+                if calendar.isDateInToday(cachedDate) {
+                    return cachedRates
+                }
             }
         }
         let rates = try await fetchBlock()

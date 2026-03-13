@@ -25,11 +25,11 @@ class WalletViewModel: ObservableObject {
         self.bitcoinAmount = userDefaultsManager.getBitcoinAmount()
     }
     
-    func fetchRates() async {
+    func fetchRates(forceRefresh: Bool = false) async {
         isLoading = true
         errorMessage = nil
         do {
-            let rates = try await fixerService.fetchLatestRates(base: .BTC , symbols: [.ZAR, .USD, .AUD])
+            let rates = try await fixerService.fetchLatestRates(base: .BTC , symbols: [.ZAR, .USD, .AUD], forceRefresh: forceRefresh)
             self.currentRates = rates
             calculateValues()
         } catch {
