@@ -2,11 +2,13 @@ import SwiftUI
 
 struct WalletView: View {
     @StateObject private var viewModel: WalletViewModel
+    @State private var isShowingEditAlert = false
+    @State private var tempBitcoinAmount: String = ""
     
     init(viewModel: WalletViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
@@ -21,9 +23,18 @@ struct WalletView: View {
                             .font(.largeTitle)
                             .foregroundColor(.orange)
                         
-                        TextField("Amount", value: $viewModel.bitcoinAmount, format: .number)
-                            .keyboardType(.decimalPad)
+                        Text(viewModel.bitcoinAmount, format: .number)
                             .font(.system(size: 34, weight: .bold))
+                        
+                        Spacer()
+                        
+                        Button {
+                            showEditView()
+                        } label: {
+                            Image(systemName: "pencil.circle.fill")
+                                .font(.system(size: 28))
+                                .foregroundColor(.orange)
+                        }
                     }
                     .padding()
                     .background(Color(.systemGray6))
@@ -71,7 +82,27 @@ struct WalletView: View {
             .refreshable {
                 await viewModel.fetchRates(forceRefresh: true)
             }
+            .alert("Edit Amount", isPresented: $isShowingEditAlert) {
+                TextField("Bitcoin Amount", text: $tempBitcoinAmount)
+                    .keyboardType(.decimalPad)
+                Button("Add") {
+                    if let value = Double(tempBitcoinAmount) {
+                        viewModel.bitcoinAmount = value
+                    }
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Enter the amount of Bitcoin you want to track.")
+            }
         }
+    }
+    
+    private func showEditView() {
+        tempBitcoinAmount = String(format: "%.8f", viewModel.bitcoinAmount).replacingOccurrences(of: "0*$", with: "", options: .regularExpression).replacingOccurrences(of: "\\.$", with: "", options: .regularExpression)
+        if tempBitcoinAmount == "0" && viewModel.bitcoinAmount == 0 {
+            tempBitcoinAmount = ""
+        }
+        isShowingEditAlert = true
     }
 }
 
