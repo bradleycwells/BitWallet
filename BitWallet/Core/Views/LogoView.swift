@@ -2,11 +2,17 @@ import SwiftUI
 
 struct LogoView: View {
     @Binding var animate: Bool
-    @State private var displayedText: String = ""
+    var onComplete: (() -> Void)? = nil
+    @State private var displayedText: String = "Bit"
     private let words: [String] = ["ZAR", "USD", "AUSD", "BTC", "Bit"]
     @State private var isAnimatingText = false
     private let charWait: UInt64 = 140_000_000 // 0.2 seconds
     private let wordWait: UInt64 = 500_000_000 // 0.5 seconds
+    
+    init(animate: Binding<Bool>, onComplete: (() -> Void)? = nil) {
+        self._animate = animate
+        self.onComplete = onComplete
+    }
 
     var body: some View {
         HStack {
@@ -22,7 +28,16 @@ struct LogoView: View {
             }
         }
         .task {
-            await animateText()
+            if animate {
+                await animateText()
+            }
+        }
+        .onChange(of: animate) { _, newValue in
+            if newValue {
+                Task {
+                    await animateText()
+                }
+            }
         }
     }
 
@@ -46,5 +61,8 @@ struct LogoView: View {
             }
         }
         isAnimatingText = false
+        await MainActor.run {
+            onComplete?()
+        }
     }
 }

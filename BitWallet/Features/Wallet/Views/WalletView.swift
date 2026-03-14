@@ -69,9 +69,14 @@ struct WalletView: View {
                 await viewModel.fetchRates()
             }
             .refreshable {
-                await viewModel.fetchRates()
+                await viewModel.fetchRates(forceRefresh: true)
             }
         }
     }
+}
+
+#Preview {
+    let container = AppContainer()
+    WalletView(viewModel: container.makeWalletViewModel())
 }
 
