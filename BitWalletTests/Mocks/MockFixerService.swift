@@ -6,7 +6,7 @@ class MockFixerService: FixerService {
     var fetchedBase: CurrencyCode?
     var fetchedSymbols: [CurrencyCode]?
     
-    func fetchLatestRates(base: CurrencyCode, symbols: [CurrencyCode]) async throws -> [CurrencyCode: Double] {
+    func fetchLatestRates(base: BitWallet.CurrencyCode, symbols: [BitWallet.CurrencyCode], forceRefresh: Bool) async throws -> [BitWallet.CurrencyCode : Double] {
         self.fetchedBase = base
         self.fetchedSymbols = symbols
         

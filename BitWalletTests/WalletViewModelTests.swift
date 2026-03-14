@@ -35,8 +35,8 @@ final class WalletViewModelTests: XCTestCase {
     func testFetchRatesSuccessUpdatesCurrencyValues() async {
         // Arrange
         let mockRates: [CurrencyCode: Double] = [
-            .zar: 1000000.0,
-            .usd: 50000.0
+            .ZAR: 1000000.0,
+            .USD: 50000.0
         ]
         mockFixerService.resultToReturn = .success(mockRates)
         
@@ -48,7 +48,7 @@ final class WalletViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.errorMessage)
         
         // Because btcAmount is 2.0, the total values should be double the rates
-        if let zarValue = viewModel.currencyValues.first(where: { $0.code == .zar }) {
+        if let zarValue = viewModel.currencyValues.first(where: { $0.code == .ZAR }) {
             XCTAssertEqual(zarValue.totalValue, 2000000.0)
         } else {
             XCTFail("ZAR value missing")
@@ -70,7 +70,7 @@ final class WalletViewModelTests: XCTestCase {
     
     func testUpdatingBTCAmountRecalculatesValuesAndSaves() async {
         // Arrange
-        let mockRates: [CurrencyCode: Double] = [.usd: 50000.0]
+        let mockRates: [CurrencyCode: Double] = [.USD: 50000.0]
         mockFixerService.resultToReturn = .success(mockRates)
         await viewModel.fetchRates()
         
@@ -79,7 +79,7 @@ final class WalletViewModelTests: XCTestCase {
         
         // Assert
         XCTAssertEqual(mockUserDefaultsManager.btcAmount, 3.0)
-        if let usdValue = viewModel.currencyValues.first(where: { $0.code == .usd }) {
+        if let usdValue = viewModel.currencyValues.first(where: { $0.code == .USD }) {
             XCTAssertEqual(usdValue.totalValue, 150000.0)
         } else {
             XCTFail("USD value missing")
