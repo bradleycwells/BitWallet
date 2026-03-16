@@ -9,6 +9,7 @@ struct CurrencyRowView: View {
                 .font(.title2)
                 .fontWeight(.bold)
                 .frame(width: 40)
+                .foregroundColor(.orange)
             
             VStack(alignment: .leading) {
                 Text(currency.code.rawValue)
@@ -20,7 +21,7 @@ struct CurrencyRowView: View {
             
             Spacer()
             
-            VStack{
+            VStack(alignment: .trailing) {
                 if let fluctuation = currency.fluctuation {
                     HStack(spacing: 4) {
                         Image(systemName: fluctuation >= 0 ? "arrow.up" : "arrow.down")
@@ -29,10 +30,12 @@ struct CurrencyRowView: View {
                             .font(.subheadline)
                     }
                     .foregroundColor(fluctuation >= 0 ? .green : .red)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 Text(formatCurrency(currency.totalValue))
                     .font(.title3)
                     .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
         .padding(.vertical, 8)
