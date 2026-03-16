@@ -4,6 +4,7 @@ struct WalletView: View {
     @StateObject private var viewModel: WalletViewModel
     @State private var isShowingEditAlert = false
     @State private var isShowingWelcomeAlert = false
+    @State private var isShowingCurrencySelection = false
     @State private var tempBitcoinAmount: String = ""
     
     init(viewModel: WalletViewModel) {
@@ -51,6 +52,17 @@ struct WalletView: View {
             ToolbarItem(placement: .principal) {
                 LogoView(animate: .constant(false))
             }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    isShowingCurrencySelection = true
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title3)
+                }
+            }
+        }
+        .sheet(isPresented: $isShowingCurrencySelection) {
+            CurrencySelectionView(viewModel: viewModel)
         }
         .task {
             if !viewModel.isOnboardingCompleted {

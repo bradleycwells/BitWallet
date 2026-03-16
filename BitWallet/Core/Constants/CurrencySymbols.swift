@@ -1,6 +1,15 @@
 import Foundation
 
-public enum CurrencySymbol: String, CaseIterable {
+public enum CurrencySymbol: String, CaseIterable, Identifiable {
+    public var id: String { rawValue }
+
+    public var name: String? {
+        return CurrencySymbols.name(for: self)
+    }
+
+    public var symbol: String? {
+        return CurrencySymbols.symbol(for: self)
+    }
     case AED, AFN, ALL, AMD, ANG, AOA, ARS, AUD, AWG, AZN
     case BAM, BBD, BDT, BGN, BHD, BIF, BMD, BND, BOB, BRL
     case BSD, BTC, BTN, BWP, BYN, BYR, BZD, CAD, CDF, CHF

@@ -5,11 +5,7 @@ struct CurrencyRowView: View {
     
     var body: some View {
         HStack {
-            Text(currency.code.symbol ?? "...")
-                .font(.title2)
-                .fontWeight(.bold)
-                .frame(width: 40)
-                .foregroundColor(.orange)
+            WSSymbolText(symbol: currency.code.symbol ?? "...")
             
             VStack(alignment: .leading) {
                 Text(currency.code.rawValue)
@@ -54,20 +50,5 @@ struct CurrencyRowView: View {
         formatter.positivePrefix = "+"
         return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
     }
-}
-#Preview("CurrencyRowView – Samples") {
-    VStack(spacing: 12) {
-        CurrencyRowView(
-            currency: CurrencyValue(
-                code: .USD,
-                rate: 64123.45,
-                totalValue: 0.25 * 64123.45,
-                fluctuation: 1.2345
-            )
-        )
-        .padding(.horizontal)
-    }
-    .padding(.vertical)
-    .previewLayout(.sizeThatFits)
 }
 

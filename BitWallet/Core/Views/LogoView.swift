@@ -4,7 +4,7 @@ struct LogoView: View {
     @Binding var animate: Bool
     var onComplete: (() -> Void)? = nil
     @State private var displayedText: String = "Bit"
-    private let words: [String] = ["ZAR", "USD", "AUSD", "BTC", "Bit"]
+    private let words: [String] = AppConstants.priorityCurrencies + ["BTC", "Bit"]
     @State private var isAnimatingText = false
     private let charWait: UInt64 = 140_000_000 // 0.2 seconds
     private let wordWait: UInt64 = 500_000_000 // 0.5 seconds
@@ -62,6 +62,7 @@ struct LogoView: View {
         }
         isAnimatingText = false
         await MainActor.run {
+            HapticManager.shared.triggerLogoAnimationComplete()
             onComplete?()
         }
     }
