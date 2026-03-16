@@ -7,6 +7,7 @@ class WalletViewModel: ObservableObject {
         didSet {
             userDefaultsManager.setBitcoinAmount(bitcoinAmount)
             calculateValues()
+            HapticManager.shared.triggerSuccess()
         }
     }
     
