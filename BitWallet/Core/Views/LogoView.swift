@@ -62,6 +62,7 @@ struct LogoView: View {
         }
         isAnimatingText = false
         await MainActor.run {
+            HapticManager.shared.triggerLogoAnimationComplete()
             onComplete?()
         }
     }

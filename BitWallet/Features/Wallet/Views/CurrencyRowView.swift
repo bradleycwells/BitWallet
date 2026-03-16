@@ -5,11 +5,7 @@ struct CurrencyRowView: View {
     
     var body: some View {
         HStack {
-            Text(currency.code.symbol ?? "...")
-                .font(.title2)
-                .fontWeight(.bold)
-                .frame(width: 40)
-                .foregroundColor(.orange)
+            WSSymbolText(symbol: currency.code.symbol ?? "...")
             
             VStack(alignment: .leading) {
                 Text(currency.code.rawValue)

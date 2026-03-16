@@ -16,6 +16,10 @@ class HapticManager {
         AudioServicesPlaySystemSound(1322)
     }
     
+    func triggerLogoAnimationComplete(){
+        AudioServicesPlaySystemSound(1407)
+    }
+    
     func playNotificationSound() {
         AudioServicesPlaySystemSound(1057)
     }

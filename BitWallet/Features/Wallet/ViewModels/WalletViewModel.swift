@@ -70,8 +70,20 @@ class WalletViewModel: ObservableObject {
     }
     
     private func calculateValues() {
+        let priorityOrder = ["ZAR", "USD", "AUD"]
+        
+        let sortedCodes = selectedCurrencyCodes.sorted { code1, code2 in
+            let index1 = priorityOrder.firstIndex(of: code1.rawValue) ?? Int.max
+            let index2 = priorityOrder.firstIndex(of: code2.rawValue) ?? Int.max
+            
+            if index1 != index2 {
+                return index1 < index2
+            }
+            return code1.rawValue < code2.rawValue
+        }
+        
         var newValues: [CurrencyValue] = []
-        for code in selectedCurrencyCodes {
+        for code in sortedCodes {
             if let rate = currentRates[code] {
                 let total = rate * bitcoinAmount
                 let fluctuation = currentFluctuations[code]

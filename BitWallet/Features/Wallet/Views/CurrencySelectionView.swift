@@ -13,13 +13,26 @@ struct CurrencySelectionView: View {
     }
     
     var filteredCurrencies: [CurrencyCode] {
+        let allCurrencies = CurrencyCode.allCases.filter { $0 != .BTC }
+        let filtered: [CurrencyCode]
         if searchText.isEmpty {
-            return CurrencyCode.allCases.filter { $0 != .BTC }
+            filtered = allCurrencies
         } else {
-            return CurrencyCode.allCases.filter { $0 != .BTC &&
-                (($0.name?.localizedCaseInsensitiveContains(searchText) ?? false) ||
-                 $0.rawValue.localizedCaseInsensitiveContains(searchText))
+            filtered = allCurrencies.filter {
+                ($0.name?.localizedCaseInsensitiveContains(searchText) ?? false) ||
+                $0.rawValue.localizedCaseInsensitiveContains(searchText)
             }
+        }
+        
+        let priorityOrder = ["ZAR", "USD", "AUD"]
+        return filtered.sorted { code1, code2 in
+            let index1 = priorityOrder.firstIndex(of: code1.rawValue) ?? Int.max
+            let index2 = priorityOrder.firstIndex(of: code2.rawValue) ?? Int.max
+            
+            if index1 != index2 {
+                return index1 < index2
+            }
+            return code1.rawValue < code2.rawValue
         }
     }
     
@@ -96,6 +109,9 @@ struct CurrencySelectionRow: View {
     var body: some View {
         Button(action: toggle) {
             HStack {
+                if let symbol = code.symbol {
+                    WSSymbolText(symbol: symbol)
+                }
                 VStack(alignment: .leading) {
                     Text(code.rawValue)
                         .font(.headline)
@@ -108,11 +124,7 @@ struct CurrencySelectionRow: View {
                 
                 Spacer()
                 
-                if let symbol = code.symbol {
-                    Text(symbol)
-                        .font(.title3)
-                        .foregroundColor(.orange)
-                }
+
                 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(isSelected ? .orange : Color(.systemGray4))
