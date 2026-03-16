@@ -2,9 +2,12 @@ import Foundation
 
 class APIRateCacheManager {
     private let defaults: UserDefaults
-    
-    init(defaults: UserDefaults = .standard) {
+    /// Cache expiration interval in seconds (default: 24 hours)
+    private let cacheExpirationInterval: TimeInterval
+
+    init(defaults: UserDefaults = .standard, cacheExpirationInterval: TimeInterval = 86400) {
         self.defaults = defaults
+        self.cacheExpirationInterval = cacheExpirationInterval
     }
     
     private func ratesKey(for endpoint: String, base: String, symbols: [String]) -> String {
@@ -35,7 +38,7 @@ class APIRateCacheManager {
         if !forceRefresh {
             let (cachedRates, cachedDate) = getRates(endpoint: endpoint, base: base, symbols: symbols)
             if let cachedRates = cachedRates, let cachedDate = cachedDate {
-                if cachedDate.timeIntervalSinceNow > -86400 {
+                if cachedDate.timeIntervalSinceNow > -cacheExpirationInterval {
                     return cachedRates
                 }
             }
