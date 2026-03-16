@@ -3,6 +3,7 @@ import SwiftUI
 struct WalletView: View {
     @StateObject private var viewModel: WalletViewModel
     @State private var isShowingEditAlert = false
+    @State private var isShowingWelcomeAlert = false
     @State private var tempBitcoinAmount: String = ""
     
     init(viewModel: WalletViewModel) {
@@ -78,6 +79,8 @@ struct WalletView: View {
                     .buttonStyle(.bordered)
                 }
                 Spacer()
+            } else if viewModel.currencyValues.isEmpty && !viewModel.isLoading {
+                emptyStateView
             } else {
                 List(viewModel.currencyValues) { value in
                     CurrencyRowView(currency: value)
@@ -91,10 +94,33 @@ struct WalletView: View {
             }
         }
         .task {
-            await viewModel.fetchRates()
+            if !viewModel.isOnboardingCompleted {
+                isShowingWelcomeAlert = true
+            } else {
+                await viewModel.fetchRates()
+            }
         }
         .refreshable {
             await viewModel.fetchRates(forceRefresh: true)
+        }
+        .alert("Welcome to BitWallet!", isPresented: $isShowingWelcomeAlert) {
+            TextField(CurrencySymbols.symbol(for: .BTC)!, text: $tempBitcoinAmount)
+                    .font(.system(size: 34, weight: .bold))
+                    .keyboardType(.decimalPad)
+            Button("Get Started") {
+                viewModel.setOnboardingCompleted()
+                if let value = Double(tempBitcoinAmount), value > 0 {
+                    viewModel.bitcoinAmount = value
+                    Task {
+                        await viewModel.fetchRates()
+                    }
+                }
+            }
+            Button("Maybe Later", role: .cancel) {
+                viewModel.setOnboardingCompleted()
+            }
+        } message: {
+            Text("Please enter the amount of Bitcoin you currently hold to start tracking its value in other currencies.")
         }
         .alert("Edit Amount", isPresented: $isShowingEditAlert) {
             TextField("Bitcoin Amount", text: $tempBitcoinAmount)
@@ -116,6 +142,42 @@ struct WalletView: View {
             tempBitcoinAmount = ""
         }
         isShowingEditAlert = true
+    }
+    
+    private var emptyStateView: some View {
+        VStack(spacing: 20) {
+            Spacer()
+            Image(systemName: "bitcoinsign.circle.fill")
+                .font(.system(size: 80))
+                .foregroundColor(.orange.opacity(0.8))
+            
+            VStack(spacing: 8) {
+                Text("Ready to track?")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text("Set your Bitcoin amount to see its value in different currencies.")
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
+            
+            Button {
+                isShowingWelcomeAlert = true
+            } label: {
+                Text("Set Amount")
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 30)
+                    .padding(.vertical, 12)
+                    .background(Color.orange)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            .shadow(color: .orange.opacity(0.3), radius: 10, x: 0, y: 5)
+            
+            Spacer()
+        }
     }
 }
 

@@ -3,9 +3,12 @@ import Combine
 
 @MainActor
 class WalletViewModel: ObservableObject {
-    @Published var bitcoinAmount: Double = 1.0 {
+    @Published var bitcoinAmount: Double = 0.0 {
         didSet {
             userDefaultsManager.setBitcoinAmount(bitcoinAmount)
+            if bitcoinAmount > 0 && !isOnboardingCompleted {
+                setOnboardingCompleted()
+            }
             calculateValues()
             HapticManager.shared.triggerSuccess()
         }
@@ -14,6 +17,7 @@ class WalletViewModel: ObservableObject {
     @Published var currencyValues: [CurrencyValue] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    @Published var isOnboardingCompleted: Bool = false
     
     private let fixerService: FixerService
     private let userDefaultsManager: UserDefaultsManaging
@@ -25,9 +29,12 @@ class WalletViewModel: ObservableObject {
         self.userDefaultsManager = userDefaultsManager
         
         self.bitcoinAmount = userDefaultsManager.getBitcoinAmount()
+        self.isOnboardingCompleted = userDefaultsManager.hasCompletedOnboarding()
     }
     
     func fetchRates(forceRefresh: Bool = false) async {
+        guard bitcoinAmount > 0 else { return }
+        
         if !forceRefresh { isLoading = true }
         errorMessage = nil
         do {
@@ -57,5 +64,10 @@ class WalletViewModel: ObservableObject {
             }
         }
         self.currencyValues = newValues
+    }
+    
+    func setOnboardingCompleted() {
+        isOnboardingCompleted = true
+        userDefaultsManager.setCompletedOnboarding(true)
     }
 }
