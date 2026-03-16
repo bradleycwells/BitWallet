@@ -15,9 +15,12 @@ struct LogoView: View {
     }
 
     var body: some View {
-        HStack(spacing: 4) {
-            Text("🚀")
-                .font(.system(size: 30))
+        HStack(spacing: 8) {
+            Image("AppLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 40, height: 40)
+                .cornerRadius(8)
             
             HStack(spacing: 0) {
                 Text(displayedText)
@@ -27,7 +30,7 @@ struct LogoView: View {
                     .foregroundColor(.brandText)
                     .bold()
             }
-            .font(.largeTitle)
+            .font(.system(.largeTitle, design: .rounded))
         }
         .onTapGesture {
             Task {
