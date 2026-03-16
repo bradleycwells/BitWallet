@@ -24,7 +24,7 @@ struct CurrencySelectionView: View {
             }
         }
         
-        let priorityOrder = ["ZAR", "USD", "AUD"]
+        let priorityOrder = AppConstants.priorityCurrencies
         return filtered.sorted { code1, code2 in
             let index1 = priorityOrder.firstIndex(of: code1.rawValue) ?? Int.max
             let index2 = priorityOrder.firstIndex(of: code2.rawValue) ?? Int.max

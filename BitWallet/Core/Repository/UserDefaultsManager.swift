@@ -36,7 +36,7 @@ class UserDefaultsManager: UserDefaultsManaging {
     }
 
     func getSelectedCurrencies() -> [String] {
-        return defaults.stringArray(forKey: selectedCurrenciesKey) ?? ["ZAR", "USD", "AUD"]
+        return defaults.stringArray(forKey: selectedCurrenciesKey) ?? AppConstants.priorityCurrencies
     }
 
     func setSelectedCurrencies(_ currencies: [String]) {

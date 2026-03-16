@@ -70,7 +70,7 @@ class WalletViewModel: ObservableObject {
     }
     
     private func calculateValues() {
-        let priorityOrder = ["ZAR", "USD", "AUD"]
+        let priorityOrder = AppConstants.priorityCurrencies
         
         let sortedCodes = selectedCurrencyCodes.sorted { code1, code2 in
             let index1 = priorityOrder.firstIndex(of: code1.rawValue) ?? Int.max
