@@ -131,7 +131,7 @@ struct CurrencySelectionRow: View {
                     .font(.title3)
                     .padding(.leading, 8)
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, 10)
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())

@@ -39,7 +39,6 @@ class APIRateCacheManager {
             let (cachedRates, cachedDate) = getRates(endpoint: endpoint, base: base, symbols: symbols)
             if let cachedRates = cachedRates, let cachedDate = cachedDate {
                 if cachedDate.timeIntervalSinceNow > -cacheExpirationInterval {
-                    print("fetched from cache \(cachedDate.formatted(date: .abbreviated, time: .shortened))")
                     return (cachedRates, cachedDate)
                 }
             }
