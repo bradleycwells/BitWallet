@@ -18,6 +18,7 @@ class WalletViewModel: ObservableObject {
     private let fixerService: FixerService
     private let userDefaultsManager: UserDefaultsManaging
     private var currentRates: [CurrencyCode: Double] = [:]
+    private var currentFluctuations: [CurrencyCode: Double] = [:]
     
     init(fixerService: FixerService, userDefaultsManager: UserDefaultsManaging) {
         self.fixerService = fixerService
@@ -27,11 +28,18 @@ class WalletViewModel: ObservableObject {
     }
     
     func fetchRates(forceRefresh: Bool = false) async {
-        if (!forceRefresh){isLoading = true}
+        if !forceRefresh { isLoading = true }
         errorMessage = nil
         do {
-            let rates = try await fixerService.fetchLatestRates(base: .BTC , symbols: [.ZAR, .USD, .AUD], forceRefresh: forceRefresh)
+            let symbols: [CurrencyCode] = [.ZAR, .USD, .AUD]
+            
+            async let ratesTask = fixerService.fetchLatestRates(base: .BTC, symbols: symbols, forceRefresh: forceRefresh)
+            async let fluctuationsTask = fixerService.fetchFluctuations(base: .BTC, symbols: symbols, forceRefresh: forceRefresh)
+            
+            let (rates, fluctuations) = try await (ratesTask, fluctuationsTask)
+            
             self.currentRates = rates
+            self.currentFluctuations = fluctuations
             calculateValues()
         } catch {
             errorMessage = error.localizedDescription
@@ -44,7 +52,8 @@ class WalletViewModel: ObservableObject {
         for code in [CurrencyCode.ZAR, CurrencyCode.USD, CurrencyCode.AUD] {
             if let rate = currentRates[code] {
                 let total = rate * bitcoinAmount
-                newValues.append(CurrencyValue(code: code, rate: rate, totalValue: total))
+                let fluctuation = currentFluctuations[code]
+                newValues.append(CurrencyValue(code: code, rate: rate, totalValue: total, fluctuation: fluctuation))
             }
         }
         self.currencyValues = newValues

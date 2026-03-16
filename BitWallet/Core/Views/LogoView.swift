@@ -32,7 +32,7 @@ struct LogoView: View {
                 await animateText()
             }
         }
-        .onChange(of: animate) { _, newValue in
+        .onChange(of: animate) { newValue in
             if newValue {
                 Task {
                     await animateText()
