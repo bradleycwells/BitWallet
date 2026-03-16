@@ -18,27 +18,34 @@ struct LatestRatesEndpoint: Endpoint {
 class DefaultFixerService: FixerService {
     private let apiClient: APIClient
     private let token: String
-    
-    init(apiClient: APIClient, token: String) {
+    private let rateCacheManager: APIRateCacheManager
+
+    init(apiClient: APIClient, token: String, rateCacheManager: APIRateCacheManager = APIRateCacheManager()) {
         self.apiClient = apiClient
         self.token = token
+        self.rateCacheManager = rateCacheManager
     }
-    
-    func fetchLatestRates(base: CurrencyCode, symbols: [CurrencyCode]) async throws -> [CurrencyCode: Double] {
+
+    func fetchLatestRates(base: CurrencyCode, symbols: [CurrencyCode], forceRefresh: Bool) async throws -> [CurrencyCode: Double] {
         let endpoint = LatestRatesEndpoint(base: base, symbols: symbols)
-        let response: ExchangeRatesResponse = try await apiClient.request(endpoint: endpoint, headerToken: token)
-        
-        if let error = response.error {
-            throw NetworkError.serverError(statusCode: error.code)
+        let endpointName = endpoint.path
+        let baseCode = base.rawValue
+        let symbolCodes = symbols.map { $0.rawValue }
+
+        let ratesDict = try await rateCacheManager.getOrFetchRates(endpoint: endpointName, base: baseCode, symbols: symbolCodes, forceRefresh: forceRefresh) {
+            let response: ExchangeRatesResponse = try await apiClient.request(endpoint: endpoint, headerToken: token)
+            if let error = response.error {
+                throw NetworkError.serverError(statusCode: error.code)
+            }
+            guard let rates = response.rates else {
+                throw NetworkError.decodingFailed(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No rates returned"]))
+            }
+            return rates
         }
-        
-        guard let rates = response.rates else {
-            throw NetworkError.decodingFailed(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No rates returned"]))
-        }
-        
+
         var result: [CurrencyCode: Double] = [:]
         for code in symbols {
-            if let rate = rates[code.rawValue] {
+            if let rate = ratesDict[code.rawValue] {
                 result[code] = rate
             }
         }

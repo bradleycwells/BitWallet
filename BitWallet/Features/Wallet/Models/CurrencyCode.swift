@@ -1,19 +1,26 @@
 import Foundation
 
 enum CurrencyCode: String, CaseIterable, Identifiable {
-    case btc = "BTC"
-    case zar = "ZAR"
-    case usd = "USD"
-    case aud = "AUD"
-    
+    case BTC
+    case ZAR
+    case USD
+    case AUD
+    // Add more as needed
+
     var id: String { rawValue }
-    
-    var symbol: String {
-        switch self {
-        case .btc: return "₿"
-        case .zar: return "R"
-        case .usd: return "$"
-        case .aud: return "A$"
-        }
+
+    var symbol: String? {
+        guard let symbolEnum = CurrencySymbol(rawValue: rawValue) else { return nil }
+        return CurrencySymbols.symbol(for: symbolEnum)
     }
+
+    var name: String? {
+        guard let symbolEnum = CurrencySymbol(rawValue: rawValue) else { return nil }
+        return CurrencySymbols.name(for: symbolEnum)
+    }
+
+    static let supportedCurrencies: [CurrencyCode] = [
+        .BTC, .ZAR, .USD, .AUD
+        // Add more as needed
+    ]
 }
