@@ -36,7 +36,7 @@ struct CurrencyRowView: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 20)
     }
     
     private func formatCurrency(_ value: Double) -> String {
