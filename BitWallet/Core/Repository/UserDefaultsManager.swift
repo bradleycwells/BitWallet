@@ -14,8 +14,7 @@ class UserDefaultsManager: UserDefaultsManaging {
     }
 
     func getBitcoinAmount() -> Double {
-        let amount = defaults.double(forKey: btcAmountKey)
-        return amount > 0 ? amount : 1.0 // Default to 1 BTC if not set
+        return defaults.double(forKey: btcAmountKey)
     }
 
     func setBitcoinAmount(_ amount: Double) {

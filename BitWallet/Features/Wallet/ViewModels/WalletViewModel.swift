@@ -3,7 +3,7 @@ import Combine
 
 @MainActor
 class WalletViewModel: ObservableObject {
-    @Published var bitcoinAmount: Double = 1.0 {
+    @Published var bitcoinAmount: Double = 0.0 {
         didSet {
             userDefaultsManager.setBitcoinAmount(bitcoinAmount)
             calculateValues()
@@ -28,6 +28,8 @@ class WalletViewModel: ObservableObject {
     }
     
     func fetchRates(forceRefresh: Bool = false) async {
+        guard bitcoinAmount > 0 else { return }
+        
         if !forceRefresh { isLoading = true }
         errorMessage = nil
         do {
