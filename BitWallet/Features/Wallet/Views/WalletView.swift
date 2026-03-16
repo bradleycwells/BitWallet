@@ -62,37 +62,29 @@ struct WalletView: View {
         .refreshable {
             await viewModel.fetchRates(forceRefresh: true)
         }
-        .alert("Welcome to BitWallet!", isPresented: $isShowingWelcomeAlert) {
-            TextField(CurrencySymbols.symbol(for: .BTC)!, text: $tempBitcoinAmount)
-                    .font(.system(size: 34, weight: .bold))
-                    .keyboardType(.decimalPad)
-            Button("Get Started") {
+        .welcomeAlert(
+            isPresented: $isShowingWelcomeAlert,
+            amount: $tempBitcoinAmount,
+            onGetStarted: { value in
                 viewModel.setOnboardingCompleted()
-                if let value = Double(tempBitcoinAmount), value > 0 {
+                if let value = value, value > 0 {
                     viewModel.bitcoinAmount = value
                     Task {
                         await viewModel.fetchRates()
                     }
                 }
-            }
-            Button("Maybe Later", role: .cancel) {
+            },
+            onMaybeLater: {
                 viewModel.setOnboardingCompleted()
             }
-        } message: {
-            Text("Please enter the amount of Bitcoin you currently hold to start tracking its value in other currencies.")
-        }
-        .alert("Edit Amount", isPresented: $isShowingEditAlert) {
-            TextField("Bitcoin Amount", text: $tempBitcoinAmount)
-                .keyboardType(.decimalPad)
-            Button("Add") {
-                if let value = Double(tempBitcoinAmount) {
-                    viewModel.bitcoinAmount = value
-                }
+        )
+        .editAmountAlert(
+            isPresented: $isShowingEditAlert,
+            amount: $tempBitcoinAmount,
+            onAdd: { value in
+                viewModel.bitcoinAmount = value
             }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("Enter the amount of Bitcoin you want to track.")
-        }
+        )
     }
 
     private func showEditView() {
