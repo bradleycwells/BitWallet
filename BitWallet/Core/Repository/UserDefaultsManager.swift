@@ -5,12 +5,15 @@ protocol UserDefaultsManaging {
     func setBitcoinAmount(_ amount: Double)
     func hasCompletedOnboarding() -> Bool
     func setCompletedOnboarding(_ completed: Bool)
+    func getSelectedCurrencies() -> [String]
+    func setSelectedCurrencies(_ currencies: [String])
 }
 
 class UserDefaultsManager: UserDefaultsManaging {
     private let defaults: UserDefaults
     private let btcAmountKey = "com.bitwallet.btcAmount"
     private let onboardingKey = "com.bitwallet.onboardingCompleted"
+    private let selectedCurrenciesKey = "com.bitwallet.selectedCurrencies"
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -30,5 +33,13 @@ class UserDefaultsManager: UserDefaultsManaging {
 
     func setCompletedOnboarding(_ completed: Bool) {
         defaults.set(completed, forKey: onboardingKey)
+    }
+
+    func getSelectedCurrencies() -> [String] {
+        return defaults.stringArray(forKey: selectedCurrenciesKey) ?? ["ZAR", "USD", "AUD"]
+    }
+
+    func setSelectedCurrencies(_ currencies: [String]) {
+        defaults.set(currencies, forKey: selectedCurrenciesKey)
     }
 }
