@@ -35,8 +35,7 @@ class APIRateCacheManager {
         if !forceRefresh {
             let (cachedRates, cachedDate) = getRates(endpoint: endpoint, base: base, symbols: symbols)
             if let cachedRates = cachedRates, let cachedDate = cachedDate {
-                let calendar = Calendar.current
-                if calendar.isDateInToday(cachedDate) {
+                if cachedDate.timeIntervalSinceNow > -86400 {
                     return cachedRates
                 }
             }
