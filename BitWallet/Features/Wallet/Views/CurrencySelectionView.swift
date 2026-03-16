@@ -67,6 +67,7 @@ struct CurrencySelectionView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .font(.headline)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
