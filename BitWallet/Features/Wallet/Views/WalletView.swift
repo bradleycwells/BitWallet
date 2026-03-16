@@ -48,7 +48,10 @@ struct WalletView: View {
                         isShowingWelcomeAlert = true
                     }
                 } else {
-                    WalletListView(currencyValues: viewModel.currencyValues)
+                    WalletListView(
+                        currencyValues: viewModel.currencyValues,
+                        lastFetchDate: viewModel.lastFetchDate
+                    )
                 }
             }
         }

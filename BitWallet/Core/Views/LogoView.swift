@@ -22,8 +22,10 @@ struct LogoView: View {
             HStack(spacing: 0) {
                 Text(displayedText)
                     .foregroundColor(.brandPrimary)
+                    .bold()
                 Text("Wallet")
                     .foregroundColor(.brandText)
+                    .bold()
             }
             .font(.largeTitle)
         }

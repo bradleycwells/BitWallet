@@ -45,13 +45,13 @@ class DefaultFixerService: FixerService {
         self.rateCacheManager = rateCacheManager
     }
 
-    func fetchLatestRates(base: CurrencyCode, symbols: [CurrencyCode], forceRefresh: Bool) async throws -> [CurrencyCode: Double] {
+    func fetchLatestRates(base: CurrencyCode, symbols: [CurrencyCode], forceRefresh: Bool) async throws -> ([CurrencyCode: Double], Date) {
         let endpoint = LatestRatesEndpoint(base: base, symbols: symbols)
         let endpointName = endpoint.path
         let baseCode = base.rawValue
         let symbolCodes = symbols.map { $0.rawValue }
 
-        let ratesDict = try await rateCacheManager.getOrFetchRates(endpoint: endpointName, base: baseCode, symbols: symbolCodes, forceRefresh: forceRefresh) {
+        let (ratesDict, date) = try await rateCacheManager.getOrFetchRates(endpoint: endpointName, base: baseCode, symbols: symbolCodes, forceRefresh: forceRefresh) {
             let response: ExchangeRatesResponse = try await apiClient.request(endpoint: endpoint, headerToken: token)
             if let error = response.error {
                 throw NetworkError.serverError(statusCode: error.code)
@@ -68,10 +68,10 @@ class DefaultFixerService: FixerService {
                 result[code] = rate
             }
         }
-        return result
+        return (result, date)
     }
 
-    func fetchFluctuations(base: CurrencyCode, symbols: [CurrencyCode], forceRefresh: Bool) async throws -> [CurrencyCode: Double] {
+    func fetchFluctuations(base: CurrencyCode, symbols: [CurrencyCode], forceRefresh: Bool) async throws -> ([CurrencyCode: Double], Date) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
@@ -86,7 +86,7 @@ class DefaultFixerService: FixerService {
         let baseCode = base.rawValue
         let symbolCodes = symbols.map { $0.rawValue }
 
-        let fluctuationsDict = try await rateCacheManager.getOrFetchRates(endpoint: endpointName, base: baseCode, symbols: symbolCodes, forceRefresh: forceRefresh) {
+        let (fluctuationsDict, date) = try await rateCacheManager.getOrFetchRates(endpoint: endpointName, base: baseCode, symbols: symbolCodes, forceRefresh: forceRefresh) {
             let response: FluctuationResponse = try await apiClient.request(endpoint: endpoint, headerToken: token)
             if let error = response.error {
                 throw NetworkError.serverError(statusCode: error.code)
@@ -108,6 +108,6 @@ class DefaultFixerService: FixerService {
                 result[code] = change
             }
         }
-        return result
+        return (result, date)
     }
 }

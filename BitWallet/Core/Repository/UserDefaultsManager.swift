@@ -7,6 +7,8 @@ protocol UserDefaultsManaging {
     func setCompletedOnboarding(_ completed: Bool)
     func getSelectedCurrencies() -> [String]
     func setSelectedCurrencies(_ currencies: [String])
+    func getLastFetchDate() -> Date?
+    func setLastFetchDate(_ date: Date)
 }
 
 class UserDefaultsManager: UserDefaultsManaging {
@@ -14,6 +16,7 @@ class UserDefaultsManager: UserDefaultsManaging {
     private let btcAmountKey = "com.bitwallet.btcAmount"
     private let onboardingKey = "com.bitwallet.onboardingCompleted"
     private let selectedCurrenciesKey = "com.bitwallet.selectedCurrencies"
+    private let lastFetchDateKey = "com.bitwallet.lastFetchDate"
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -41,5 +44,13 @@ class UserDefaultsManager: UserDefaultsManaging {
 
     func setSelectedCurrencies(_ currencies: [String]) {
         defaults.set(currencies, forKey: selectedCurrenciesKey)
+    }
+
+    func getLastFetchDate() -> Date? {
+        return defaults.object(forKey: lastFetchDateKey) as? Date
+    }
+
+    func setLastFetchDate(_ date: Date) {
+        defaults.set(date, forKey: lastFetchDateKey)
     }
 }
