@@ -94,7 +94,7 @@ struct WalletView: View {
             }
         }
         .task {
-            if viewModel.bitcoinAmount == 0 {
+            if !viewModel.isOnboardingCompleted {
                 isShowingWelcomeAlert = true
             } else {
                 await viewModel.fetchRates()
@@ -108,12 +108,16 @@ struct WalletView: View {
                     .font(.system(size: 34, weight: .bold))
                     .keyboardType(.decimalPad)
             Button("Get Started") {
-                if let value = Double(tempBitcoinAmount) {
+                viewModel.setOnboardingCompleted()
+                if let value = Double(tempBitcoinAmount), value > 0 {
                     viewModel.bitcoinAmount = value
                     Task {
                         await viewModel.fetchRates()
                     }
                 }
+            }
+            Button("Maybe Later", role: .cancel) {
+                viewModel.setOnboardingCompleted()
             }
         } message: {
             Text("Please enter the amount of Bitcoin you currently hold to start tracking its value in other currencies.")
