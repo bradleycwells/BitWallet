@@ -5,4 +5,5 @@ struct CurrencyValue: Identifiable, Equatable {
     let code: CurrencyCode
     let rate: Double
     let totalValue: Double
+    let fluctuation: Double?
 }

@@ -17,4 +17,13 @@ class MockFixerService: FixerService {
             throw error
         }
     }
+    
+    func fetchFluctuations(base: CurrencyCode, symbols: [CurrencyCode], forceRefresh: Bool) async throws -> [CurrencyCode: Double] {
+        switch resultToReturn {
+        case .success(let rates):
+            return rates
+        case .failure(let error):
+            throw error
+        }
+    }
 }
