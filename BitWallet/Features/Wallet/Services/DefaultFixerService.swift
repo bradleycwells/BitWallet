@@ -77,11 +77,7 @@ class DefaultFixerService: FixerService {
         
         let now = Date()
         let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: now)!
-        
-        // As per request: start date is today, end date is start of yesterday.
-        // Wait, the API documentation usually expects start_date < end_date.
-        // User said: "Put the start date as today, and the end date as the start of yesterday."
-        // I will interpret this as the range between yesterday and today.
+       
         let startDate = dateFormatter.string(from: yesterday)
         let endDate = dateFormatter.string(from: now)
         
