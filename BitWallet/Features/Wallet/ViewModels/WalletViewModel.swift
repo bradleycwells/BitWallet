@@ -45,6 +45,10 @@ class WalletViewModel: ObservableObject {
     
     func fetchRates(forceRefresh: Bool = false) async {
         guard bitcoinAmount > 0 else { return }
+        guard !selectedCurrencyCodes.isEmpty else {
+            self.currencyValues = []
+            return
+        }
         
         if !forceRefresh { isLoading = true }
         errorMessage = nil
