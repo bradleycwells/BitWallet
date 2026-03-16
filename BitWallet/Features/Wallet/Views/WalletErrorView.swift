@@ -10,12 +10,14 @@ struct WalletErrorView: View {
                 .font(.largeTitle)
                 .foregroundColor(.red)
             Text(errorMessage)
+                .foregroundColor(.brandText)
                 .multilineTextAlignment(.center)
                 .padding()
             Button("Retry") {
                 onRetry()
             }
             .buttonStyle(.bordered)
+            .tint(.brandPrimary)
         }
     }
 }

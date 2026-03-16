@@ -8,6 +8,6 @@ struct WSSymbolText: View {
             .font(.title2)
             .fontWeight(.bold)
             .frame(width: 40)
-            .foregroundColor(.orange)
+            .foregroundColor(.brandPrimary)
     }
 }

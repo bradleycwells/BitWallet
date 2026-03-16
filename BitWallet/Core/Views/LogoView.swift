@@ -15,12 +15,17 @@ struct LogoView: View {
     }
 
     var body: some View {
-        HStack {
+        HStack(spacing: 4) {
             Text("🚀")
                 .font(.system(size: 30))
-            Text(displayedText.isEmpty ? "" : displayedText + "Wallet")
-                .font(.largeTitle)
-                .bold()
+            
+            HStack(spacing: 0) {
+                Text(displayedText)
+                    .foregroundColor(.brandPrimary)
+                Text("Wallet")
+                    .foregroundColor(.brandText)
+            }
+            .font(.largeTitle)
         }
         .onTapGesture {
             Task {

@@ -8,16 +8,17 @@ struct WalletEmptyStateView: View {
             Spacer()
             Image(systemName: "bitcoinsign.circle.fill")
                 .font(.system(size: 80))
-                .foregroundColor(.orange.opacity(0.8))
+                .foregroundColor(.brandPrimary.opacity(0.8))
             
             VStack(spacing: 8) {
                 Text("Ready to track?")
                     .font(.title2)
                     .fontWeight(.bold)
+                    .foregroundColor(.brandText)
                 
                 Text("Set your Bitcoin amount to see its value in different currencies.")
                     .font(.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.brandText.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
             }
@@ -29,11 +30,11 @@ struct WalletEmptyStateView: View {
                     .fontWeight(.semibold)
                     .padding(.horizontal, 30)
                     .padding(.vertical, 12)
-                    .background(Color.orange)
-                    .foregroundColor(.white)
+                    .background(Color.brandPrimary)
+                    .foregroundColor(.black)
                     .cornerRadius(10)
             }
-            .shadow(color: .orange.opacity(0.3), radius: 10, x: 0, y: 5)
+            .shadow(color: .brandPrimary.opacity(0.3), radius: 10, x: 0, y: 5)
             
             Spacer()
         }

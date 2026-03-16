@@ -4,10 +4,16 @@ struct WalletListView: View {
     let currencyValues: [CurrencyValue]
     
     var body: some View {
-        List(currencyValues) { value in
-            CurrencyRowView(currency: value)
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                ForEach(currencyValues) { value in
+                    CurrencyRowView(currency: value)
+                        .padding(.horizontal)
+                    Divider()
+                        .background(Color.brandText.opacity(0.1))
+                }
+            }
         }
-        .listStyle(PlainListStyle())
     }
 }
 
