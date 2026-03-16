@@ -11,11 +11,11 @@ class APIRateCacheManager {
     }
     
     private func ratesKey(for endpoint: String, base: String, symbols: [String]) -> String {
-        let symbolsString = symbols.joined(separator: ",")
+        let symbolsString = symbols.sorted().joined(separator: ",")
         return "com.bitwallet.rates.\(endpoint).\(base).\(symbolsString)"
     }
     private func ratesTimestampKey(for endpoint: String, base: String, symbols: [String]) -> String {
-        let symbolsString = symbols.joined(separator: ",")
+        let symbolsString = symbols.sorted().joined(separator: ",")
         return "com.bitwallet.rates.timestamp.\(endpoint).\(base).\(symbolsString)"
     }
     
@@ -34,17 +34,19 @@ class APIRateCacheManager {
         defaults.set(Date(), forKey: timestampKey)
     }
     
-    func getOrFetchRates(endpoint: String, base: String, symbols: [String], forceRefresh: Bool = false, fetchBlock: () async throws -> [String: Double]) async throws -> [String: Double] {
+    func getOrFetchRates(endpoint: String, base: String, symbols: [String], forceRefresh: Bool = false, fetchBlock: () async throws -> [String: Double]) async throws -> ([String: Double], Date) {
         if !forceRefresh {
             let (cachedRates, cachedDate) = getRates(endpoint: endpoint, base: base, symbols: symbols)
             if let cachedRates = cachedRates, let cachedDate = cachedDate {
                 if cachedDate.timeIntervalSinceNow > -cacheExpirationInterval {
-                    return cachedRates
+                    print("fetched from cache \(cachedDate.formatted(date: .abbreviated, time: .shortened))")
+                    return (cachedRates, cachedDate)
                 }
             }
         }
         let rates = try await fetchBlock()
+        let now = Date()
         setRates(rates, endpoint: endpoint, base: base, symbols: symbols)
-        return rates
+        return (rates, now)
     }
 }

@@ -18,6 +18,7 @@ class WalletViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     @Published var isOnboardingCompleted: Bool = false
+    @Published var lastFetchDate: Date?
     
     private let fixerService: FixerService
     private let userDefaultsManager: UserDefaultsManaging
@@ -33,6 +34,7 @@ class WalletViewModel: ObservableObject {
         self.bitcoinAmount = userDefaultsManager.getBitcoinAmount()
         self.isOnboardingCompleted = userDefaultsManager.hasCompletedOnboarding()
         self.selectedCurrencyCodes = userDefaultsManager.getSelectedCurrencies().compactMap { CurrencyCode(rawValue: $0) }
+        self.lastFetchDate = userDefaultsManager.getLastFetchDate()
     }
     
     func updateSelectedCurrencies(_ codes: [CurrencyCode]) {
@@ -58,10 +60,14 @@ class WalletViewModel: ObservableObject {
             async let ratesTask = fixerService.fetchLatestRates(base: .BTC, symbols: symbols, forceRefresh: forceRefresh)
             async let fluctuationsTask = fixerService.fetchFluctuations(base: .BTC, symbols: symbols, forceRefresh: forceRefresh)
             
-            let (rates, fluctuations) = try await (ratesTask, fluctuationsTask)
+            let ((rates, ratesDate), (fluctuations, _)) = try await (ratesTask, fluctuationsTask)
             
             self.currentRates = rates
             self.currentFluctuations = fluctuations
+            
+            self.lastFetchDate = ratesDate
+            userDefaultsManager.setLastFetchDate(ratesDate)
+            
             calculateValues()
         } catch {
             errorMessage = error.localizedDescription

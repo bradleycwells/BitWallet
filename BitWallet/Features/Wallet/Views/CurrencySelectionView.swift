@@ -75,7 +75,7 @@ struct CurrencySelectionView: View {
                         dismiss()
                     }
                     .font(.headline)
-                    .foregroundColor(.orange)
+                    .foregroundColor(.brandPrimary)
                 }
             }
         }
@@ -86,7 +86,7 @@ struct CurrencySelectionView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
-        .ifAvailableTint(color: .orange)
+        .ifAvailableTint(color: .brandPrimary)
     }
     
     private func toggleCurrency(_ code: CurrencyCode) {
@@ -116,19 +116,18 @@ struct CurrencySelectionRow: View {
                 VStack(alignment: .leading) {
                     Text(code.rawValue)
                         .font(.headline)
+                        .foregroundColor(.brandText)
                     if let name = code.name {
                         Text(name)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.brandText.opacity(0.6))
                     }
                 }
                 
                 Spacer()
                 
-
-                
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(isSelected ? .orange : Color(.systemGray4))
+                    .foregroundColor(isSelected ? .brandPrimary : Color.brandText.opacity(0.3))
                     .font(.title3)
                     .padding(.leading, 8)
             }

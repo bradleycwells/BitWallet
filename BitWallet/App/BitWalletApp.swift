@@ -8,11 +8,11 @@ struct BitWalletApp: App {
     var body: some Scene {
         WindowGroup {
             Group {
-                    if showSplash {
-                        SplashScreenView(showSplash: $showSplash)
-                    } else {
-                        WalletView(viewModel: container.makeWalletViewModel())
-                    }
+                if showSplash {
+                    SplashScreenView(showSplash: $showSplash)
+                } else {
+                    WalletView(viewModel: container.makeWalletViewModel())
+                }
             }
         }
     }

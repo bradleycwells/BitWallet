@@ -2,12 +2,26 @@ import SwiftUI
 
 struct WalletListView: View {
     let currencyValues: [CurrencyValue]
+    let lastFetchDate: Date?
     
     var body: some View {
-        List(currencyValues) { value in
-            CurrencyRowView(currency: value)
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                ForEach(currencyValues) { value in
+                    CurrencyRowView(currency: value)
+                        .padding(.horizontal)
+                    Divider()
+                        .background(Color.brandText.opacity(0.1))
+                }
+                
+                if let lastFetch = lastFetchDate {
+                    Text("Last updated: \(lastFetch.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.caption2)
+                        .foregroundColor(.brandText.opacity(0.4))
+                        .padding(.vertical, 20)
+                }
+            }
         }
-        .listStyle(PlainListStyle())
     }
 }
 
@@ -25,5 +39,5 @@ struct WalletListView: View {
             totalValue: 0.25 * 60000.0,
             fluctuation: 0.45
         )
-    ])
+    ], lastFetchDate: Date())
 }

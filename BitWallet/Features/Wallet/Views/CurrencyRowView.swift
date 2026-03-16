@@ -10,9 +10,10 @@ struct CurrencyRowView: View {
             VStack(alignment: .leading) {
                 Text(currency.code.rawValue)
                     .font(.headline)
+                    .foregroundColor(.brandText)
                 Text("Rate: \(formatCurrency(currency.rate))")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.brandText.opacity(0.6))
             }
             
             Spacer()
@@ -31,6 +32,7 @@ struct CurrencyRowView: View {
                 Text(formatCurrency(currency.totalValue))
                     .font(.title3)
                     .fontWeight(.semibold)
+                    .foregroundColor(.brandText)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }

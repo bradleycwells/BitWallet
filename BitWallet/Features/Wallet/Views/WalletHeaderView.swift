@@ -8,15 +8,16 @@ struct WalletHeaderView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Your Bitcoin")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(.brandText.opacity(0.7))
             
             HStack {
                 Text("₿")
                     .font(.largeTitle)
-                    .foregroundColor(.orange)
+                    .foregroundColor(.brandPrimary)
                 
                 Text(bitcoinAmount, format: .number)
                     .font(.system(size: 34, weight: .bold))
+                    .foregroundColor(.brandText)
                 
                 Spacer()
                 
@@ -25,11 +26,11 @@ struct WalletHeaderView: View {
                 } label: {
                     Image(systemName: "pencil.circle.fill")
                         .font(.system(size: 28))
-                        .foregroundColor(.orange)
+                        .foregroundColor(.brandPrimary)
                 }
             }
             .padding()
-            .background(Color(.systemGray6))
+            .background(Color.brandText.opacity(0.05))
             .cornerRadius(12)
         }
         .padding(.horizontal)

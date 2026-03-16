@@ -27,25 +27,32 @@ struct WalletView: View {
     }
 
     private var content: some View {
-        VStack(spacing: 20) {
-            WalletHeaderView(bitcoinAmount: viewModel.bitcoinAmount) {
-                showEditView()
-            }
+        ZStack {
+            Color.brandBackground.ignoresSafeArea()
             
-            if viewModel.isLoading {
-                WalletLoadingView()
-            } else if let error = viewModel.errorMessage {
-                WalletErrorView(errorMessage: error) {
-                    Task {
-                        await viewModel.fetchRates()
+            VStack(spacing: 20) {
+                WalletHeaderView(bitcoinAmount: viewModel.bitcoinAmount) {
+                    showEditView()
+                }
+                
+                if viewModel.isLoading {
+                    WalletLoadingView()
+                } else if let error = viewModel.errorMessage {
+                    WalletErrorView(errorMessage: error) {
+                        Task {
+                            await viewModel.fetchRates()
+                        }
                     }
+                } else if viewModel.currencyValues.isEmpty && !viewModel.isLoading {
+                    WalletEmptyStateView {
+                        isShowingWelcomeAlert = true
+                    }
+                } else {
+                    WalletListView(
+                        currencyValues: viewModel.currencyValues,
+                        lastFetchDate: viewModel.lastFetchDate
+                    )
                 }
-            } else if viewModel.currencyValues.isEmpty && !viewModel.isLoading {
-                WalletEmptyStateView {
-                    isShowingWelcomeAlert = true
-                }
-            } else {
-                WalletListView(currencyValues: viewModel.currencyValues)
             }
         }
         .toolbar {
@@ -58,6 +65,7 @@ struct WalletView: View {
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.title3)
+                        .foregroundColor(.brandPrimary)
                 }
             }
         }
