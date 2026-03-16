@@ -51,19 +51,4 @@ struct CurrencyRowView: View {
         return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
     }
 }
-#Preview("CurrencyRowView – Samples") {
-    VStack(spacing: 12) {
-        CurrencyRowView(
-            currency: CurrencyValue(
-                code: .USD,
-                rate: 64123.45,
-                totalValue: 0.25 * 64123.45,
-                fluctuation: 1.2345
-            )
-        )
-        .padding(.horizontal)
-    }
-    .padding(.vertical)
-    .previewLayout(.sizeThatFits)
-}
 

@@ -11,13 +11,3 @@ struct WSSymbolText: View {
             .foregroundColor(.orange)
     }
 }
-
-#Preview {
-    Group {
-        WSSymbolText(symbol: "$")
-        WSSymbolText(symbol: "₿")
-        WSSymbolText(symbol: "...")
-    }
-    .padding()
-    .previewLayout(.sizeThatFits)
-}
