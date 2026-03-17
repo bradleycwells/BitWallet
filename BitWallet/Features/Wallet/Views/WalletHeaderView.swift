@@ -18,6 +18,11 @@ struct WalletHeaderView: View {
                 Text(bitcoinAmount, format: .number)
                     .font(.system(size: 34, weight: .bold))
                     .foregroundColor(.brandText)
+                    .onTapGesture {
+                        onEdit()
+                    }
+                    .accessibilityIdentifier("BitcoinAmountText")
+
                 
                 Spacer()
                 
@@ -28,6 +33,7 @@ struct WalletHeaderView: View {
                         .font(.system(size: 28))
                         .foregroundColor(.brandPrimary)
                 }
+                .accessibilityIdentifier("EditAmountButton")
             }
             .padding()
             .background(Color.brandText.opacity(0.05))

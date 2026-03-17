@@ -23,12 +23,79 @@ final class BitWalletUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testWelcomeAlertAppearsAndCanBeDismissed() throws {
         let app = XCUIApplication()
+        app.launchArguments.append("--reset-defaults")
         app.launch()
+        
+        // Handle Welcome Alert
+        let welcomeAlert = app.alerts["Welcome to BitWallet!"]
+        XCTAssertTrue(welcomeAlert.waitForExistence(timeout: 5), "Welcome alert should appear on first launch")
+        
+        let maybeLaterButton = welcomeAlert.buttons["Maybe Later"]
+        XCTAssertTrue(maybeLaterButton.exists, "Maybe Later button should exist")
+        
+        maybeLaterButton.tap()
+        
+        XCTAssertFalse(welcomeAlert.exists, "Welcome alert should disappear after tapping Maybe Later")
+    }
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    @MainActor
+    func testWelcomeAlertGetStarted() throws {
+        let app = XCUIApplication()
+        app.launchArguments.append("--reset-defaults")
+        app.launch()
+        
+        let welcomeAlert = app.alerts["Welcome to BitWallet!"]
+        XCTAssertTrue(welcomeAlert.waitForExistence(timeout: 5), "Welcome alert should appear on first launch")
+        
+        let textField = welcomeAlert.textFields.firstMatch
+        textField.tap()
+        textField.typeText("1.5")
+        
+        let getStartedButton = welcomeAlert.buttons["Get Started"]
+        getStartedButton.tap()
+        
+        let bitcoinAmountText = app.staticTexts["BitcoinAmountText"]
+        XCTAssertTrue(bitcoinAmountText.waitForExistence(timeout: 5), "Amount text should be visible")
+        XCTAssertTrue(bitcoinAmountText.label.contains("1.5"), "Label should reflect entered amount")
+    }
+
+    @MainActor
+    func testEditAmountViaHeader() throws {
+        let app = XCUIApplication()
+        app.launchArguments.append("--reset-defaults")
+        app.launch()
+        
+        let welcomeAlert = app.alerts["Welcome to BitWallet!"]
+        if welcomeAlert.waitForExistence(timeout: 5) {
+            let textField = welcomeAlert.textFields.firstMatch
+            textField.tap()
+            textField.typeText("1.5")
+            welcomeAlert.buttons["Get Started"].tap()
+        }
+        
+        let editButton = app.buttons["EditAmountButton"]
+        XCTAssertTrue(editButton.waitForExistence(timeout: 5), "Edit button should be visible")
+        
+        editButton.tap()
+        
+        let editAlert = app.alerts["Edit Amount"]
+        XCTAssertTrue(editAlert.waitForExistence(timeout: 2), "Edit amount alert should appear")
+        
+        let textField = editAlert.textFields.firstMatch
+        textField.tap()
+        
+        // Delete previous text
+        let deleteString = String(repeating: XCUIKeyboardKey.delete.rawValue, count: 5)
+        textField.typeText(deleteString)
+        textField.typeText("2.5")
+        
+        editAlert.buttons["Add"].tap()
+        
+        let bitcoinAmountText = app.staticTexts["BitcoinAmountText"]
+        XCTAssertTrue(bitcoinAmountText.waitForExistence(timeout: 2), "Amount text should be visible")
+        XCTAssertTrue(bitcoinAmountText.label.contains("2.5"), "Label should reflect newly entered amount")
     }
 
     @MainActor

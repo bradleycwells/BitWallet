@@ -26,6 +26,7 @@ class WalletViewModel: ObservableObject {
     private var currentFluctuations: [CurrencyCode: Double] = [:]
     
     @Published var selectedCurrencyCodes: [CurrencyCode] = []
+    @Published var currencySearchText: String = ""
     
     init(fixerService: FixerService, userDefaultsManager: UserDefaultsManaging) {
         self.fixerService = fixerService
@@ -102,5 +103,29 @@ class WalletViewModel: ObservableObject {
     func setOnboardingCompleted() {
         isOnboardingCompleted = true
         userDefaultsManager.setCompletedOnboarding(true)
+    }
+    
+    var filteredCurrencies: [CurrencyCode] {
+        let allCurrencies = CurrencyCode.allCases.filter { $0 != .BTC }
+        let filtered: [CurrencyCode]
+        if currencySearchText.isEmpty {
+            filtered = allCurrencies
+        } else {
+            filtered = allCurrencies.filter {
+                ($0.name?.localizedCaseInsensitiveContains(currencySearchText) ?? false) ||
+                $0.rawValue.localizedCaseInsensitiveContains(currencySearchText)
+            }
+        }
+        
+        let priorityOrder = AppConstants.priorityCurrencies
+        return filtered.sorted { code1, code2 in
+            let index1 = priorityOrder.firstIndex(of: code1.rawValue) ?? Int.max
+            let index2 = priorityOrder.firstIndex(of: code2.rawValue) ?? Int.max
+            
+            if index1 != index2 {
+                return index1 < index2
+            }
+            return code1.rawValue < code2.rawValue
+        }
     }
 }
