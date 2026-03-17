@@ -1,8 +1,11 @@
 import Foundation
+import Firebase
 
 @MainActor
 final class AppContainer {
     init() {
+        FirebaseApp.configure()
+
         // When running UI tests with --reset-defaults, clear the app's UserDefaults so first-launch flows show.
         if ProcessInfo.processInfo.arguments.contains("--reset-defaults") {
             if let bundleID = Bundle.main.bundleIdentifier {

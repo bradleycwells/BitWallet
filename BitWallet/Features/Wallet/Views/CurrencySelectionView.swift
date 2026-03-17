@@ -41,6 +41,7 @@ struct CurrencySelectionView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
+                        AnalyticsManager.shared.log(.currencySelectionCancelled)
                         dismiss()
                     }
                     .font(.headline)
@@ -48,6 +49,7 @@ struct CurrencySelectionView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
+                        AnalyticsManager.shared.log(.currencySelectionSaved(selectedCount: localSelection.count))
                         viewModel.updateSelectedCurrencies(Array(localSelection))
                         dismiss()
                     }
@@ -71,6 +73,8 @@ struct CurrencySelectionView: View {
     }
     
     private func toggleCurrency(_ code: CurrencyCode) {
+        AnalyticsManager.shared.log(.currencyToggled(currencyCode: code.rawValue, wasSelectedBefore: localSelection.contains(code)))
+        
         if localSelection.contains(code) {
             if localSelection.count > 1 {
                 localSelection.remove(code)
