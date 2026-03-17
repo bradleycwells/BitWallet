@@ -67,6 +67,7 @@ struct WalletView: View {
                         .font(.title3)
                         .foregroundColor(.brandPrimary)
                 }
+                .accessibilityIdentifier("AddCurrencyButton")
             }
         }
         .sheet(isPresented: $isShowingCurrencySelection) {

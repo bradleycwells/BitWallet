@@ -2,32 +2,34 @@ import Foundation
 @testable import BitWallet
 
 class MockUserDefaultsManager: UserDefaultsManaging {
+    var btcAmount: Double = 2.0
+    var onboardingCompleted: Bool = false
+    var selectedCurrencies: [String] = ["USD", "ZAR", "AUD"]
+    var lastFetchDate: Date? = nil
+    
     func hasCompletedOnboarding() -> Bool {
-        <#code#>
+        return onboardingCompleted
     }
     
     func setCompletedOnboarding(_ completed: Bool) {
-        <#code#>
+        onboardingCompleted = completed
     }
     
     func getSelectedCurrencies() -> [String] {
-        <#code#>
+        return selectedCurrencies
     }
     
     func setSelectedCurrencies(_ currencies: [String]) {
-        <#code#>
+        selectedCurrencies = currencies
     }
     
     func getLastFetchDate() -> Date? {
-        <#code#>
+        return lastFetchDate
     }
     
     func setLastFetchDate(_ date: Date) {
-        <#code#>
+        lastFetchDate = date
     }
-    
-    
-    var btcAmount: Double = 1.0
     
     func getBitcoinAmount() -> Double {
         return btcAmount

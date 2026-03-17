@@ -3,37 +3,12 @@ import SwiftUI
 struct CurrencySelectionView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: WalletViewModel
-    @State private var searchText = ""
     @State private var localSelection: Set<CurrencyCode> = []
     @State private var isShowingAlert = false
     
     init(viewModel: WalletViewModel) {
         self.viewModel = viewModel
         self._localSelection = State(initialValue: Set(viewModel.selectedCurrencyCodes))
-    }
-    
-    var filteredCurrencies: [CurrencyCode] {
-        let allCurrencies = CurrencyCode.allCases.filter { $0 != .BTC }
-        let filtered: [CurrencyCode]
-        if searchText.isEmpty {
-            filtered = allCurrencies
-        } else {
-            filtered = allCurrencies.filter {
-                ($0.name?.localizedCaseInsensitiveContains(searchText) ?? false) ||
-                $0.rawValue.localizedCaseInsensitiveContains(searchText)
-            }
-        }
-        
-        let priorityOrder = AppConstants.priorityCurrencies
-        return filtered.sorted { code1, code2 in
-            let index1 = priorityOrder.firstIndex(of: code1.rawValue) ?? Int.max
-            let index2 = priorityOrder.firstIndex(of: code2.rawValue) ?? Int.max
-            
-            if index1 != index2 {
-                return index1 < index2
-            }
-            return code1.rawValue < code2.rawValue
-        }
     }
     
     var body: some View {
@@ -43,12 +18,13 @@ struct CurrencySelectionView: View {
                     // No header needed; searchable will be applied below
                 } else {
                     Section(header: Text("Search")) {
-                        TextField("Search currencies", text: $searchText)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            TextField("Search currencies", text: $viewModel.currencySearchText)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .accessibilityIdentifier("CurrencySearchField")
                     }
                 }
 
-                ForEach(filteredCurrencies) { code in
+                ForEach(viewModel.filteredCurrencies) { code in
                     CurrencySelectionRow(
                         code: code,
                         isSelected: localSelection.contains(code),
@@ -61,13 +37,14 @@ struct CurrencySelectionView: View {
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("Select Currencies")
             .navigationBarTitleDisplayMode(.inline)
-            .modifier(SearchableIfAvailable(searchText: $searchText))
+            .modifier(SearchableIfAvailable(searchText: $viewModel.currencySearchText))
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         dismiss()
                     }
                     .font(.headline)
+                    .accessibilityIdentifier("CurrencySelectionCancelButton")
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
@@ -76,6 +53,7 @@ struct CurrencySelectionView: View {
                     }
                     .font(.headline)
                     .foregroundColor(.brandPrimary)
+                    .accessibilityIdentifier("CurrencySelectionSaveButton")
                 }
             }
         }
@@ -87,6 +65,9 @@ struct CurrencySelectionView: View {
             )
         }
         .ifAvailableTint(color: .brandPrimary)
+        .onAppear {
+            viewModel.currencySearchText = ""
+        }
     }
     
     private func toggleCurrency(_ code: CurrencyCode) {
@@ -135,6 +116,7 @@ struct CurrencySelectionRow: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityIdentifier("CurrencyRow_\(code.rawValue)")
     }
 }
 
