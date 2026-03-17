@@ -1,5 +1,4 @@
 import SwiftUI
-import FirebaseAnalytics
 
 struct WalletHeaderView: View {
     let bitcoinAmount: Double
@@ -20,7 +19,7 @@ struct WalletHeaderView: View {
                     .font(.system(size: 34, weight: .bold))
                     .foregroundColor(.brandText)
                     .onTapGesture {
-                        Analytics.logEvent("edit_btc_amount_tapped", parameters: ["source": "text"])
+                        AnalyticsManager.shared.log(.editBtcAmountTapped(source: "text"))
                         onEdit()
                     }
                     .accessibilityIdentifier("BitcoinAmountText")
@@ -29,7 +28,7 @@ struct WalletHeaderView: View {
                 Spacer()
                 
                 Button {
-                    Analytics.logEvent("edit_btc_amount_tapped", parameters: ["source": "button"])
+                    AnalyticsManager.shared.log(.editBtcAmountTapped(source: "button"))
                     onEdit()
                 } label: {
                     Image(systemName: "pencil.circle.fill")
