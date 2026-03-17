@@ -19,6 +19,7 @@ struct WalletHeaderView: View {
                     .font(.system(size: 34, weight: .bold))
                     .foregroundColor(.brandText)
                     .onTapGesture {
+                        AnalyticsManager.shared.log(.editBtcAmountTapped(source: "text"))
                         onEdit()
                     }
                     .accessibilityIdentifier("BitcoinAmountText")
@@ -27,6 +28,7 @@ struct WalletHeaderView: View {
                 Spacer()
                 
                 Button {
+                    AnalyticsManager.shared.log(.editBtcAmountTapped(source: "button"))
                     onEdit()
                 } label: {
                     Image(systemName: "pencil.circle.fill")

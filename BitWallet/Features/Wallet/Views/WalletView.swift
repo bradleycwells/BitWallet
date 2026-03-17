@@ -61,6 +61,7 @@ struct WalletView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
+                    AnalyticsManager.shared.log(.addCurrencyButtonTapped)
                     isShowingCurrencySelection = true
                 } label: {
                     Image(systemName: "plus.circle.fill")
@@ -87,6 +88,7 @@ struct WalletView: View {
             isPresented: $isShowingWelcomeAlert,
             amount: $tempBitcoinAmount,
             onGetStarted: { value in
+                AnalyticsManager.shared.log(.welcomeAlertGetStarted)
                 viewModel.setOnboardingCompleted()
                 if let value = value, value > 0 {
                     viewModel.bitcoinAmount = value
@@ -96,6 +98,7 @@ struct WalletView: View {
                 }
             },
             onMaybeLater: {
+                AnalyticsManager.shared.log(.welcomeAlertMaybeLater)
                 viewModel.setOnboardingCompleted()
             }
         )
@@ -103,6 +106,7 @@ struct WalletView: View {
             isPresented: $isShowingEditAlert,
             amount: $tempBitcoinAmount,
             onAdd: { value in
+                AnalyticsManager.shared.log(.editAmountAlertSaved)
                 viewModel.bitcoinAmount = value
             }
         )
