@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		ECA9BF6C2F69AA960059280F /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ECA9BF6B2F69AA960059280F /* FirebaseAnalytics */; };
+		ECA9BF6E2F69AA960059280F /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = ECA9BF6D2F69AA960059280F /* FirebaseCrashlytics */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		ECF5E5D02F5F0D360024512B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -77,6 +82,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ECA9BF6C2F69AA960059280F /* FirebaseAnalytics in Frameworks */,
+				ECA9BF6E2F69AA960059280F /* FirebaseCrashlytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,6 +134,7 @@
 				ECF5E5BE2F5F0D340024512B /* Sources */,
 				ECF5E5BF2F5F0D340024512B /* Frameworks */,
 				ECF5E5C02F5F0D340024512B /* Resources */,
+				ECA9BF6F2F69AC400059280F /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -137,6 +145,8 @@
 			);
 			name = BitWallet;
 			packageProductDependencies = (
+				ECA9BF6B2F69AA960059280F /* FirebaseAnalytics */,
+				ECA9BF6D2F69AA960059280F /* FirebaseCrashlytics */,
 			);
 			productName = BitWallet;
 			productReference = ECF5E5C22F5F0D340024512B /* BitWallet.app */;
@@ -220,6 +230,9 @@
 			);
 			mainGroup = ECF5E5B92F5F0D340024512B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				ECA9BF6A2F69AA960059280F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = ECF5E5C32F5F0D340024512B /* Products */;
 			projectDirPath = "";
@@ -255,6 +268,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		ECA9BF6F2F69AC400059280F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"$CONFIGURATION\" != \"Release\" ]; then\n  echo \"Skipping Crashlytics symbol upload for non-Release build.\"\n  exit 0\nfi\n\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		ECF5E5BE2F5F0D340024512B /* Sources */ = {
@@ -607,6 +640,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ECA9BF6A2F69AA960059280F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ECA9BF6B2F69AA960059280F /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ECA9BF6A2F69AA960059280F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		ECA9BF6D2F69AA960059280F /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ECA9BF6A2F69AA960059280F /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = ECF5E5BA2F5F0D340024512B /* Project object */;
 }
