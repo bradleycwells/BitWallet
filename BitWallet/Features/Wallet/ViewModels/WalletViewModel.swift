@@ -42,18 +42,19 @@ class WalletViewModel: ObservableObject {
         self.selectedCurrencyCodes = codes
         userDefaultsManager.setSelectedCurrencies(codes.map { $0.rawValue })
         Task {
-            await fetchRates(forceRefresh: true)
+            await fetchRates(forceRefresh: false)
         }
     }
     
     func fetchRates(forceRefresh: Bool = false) async {
+        print("force -- ", forceRefresh)
         guard bitcoinAmount > 0 else { return }
         guard !selectedCurrencyCodes.isEmpty else {
             self.currencyValues = []
             return
         }
         
-        if !forceRefresh { isLoading = true }
+        if forceRefresh { isLoading = true }
         errorMessage = nil
         do {
             let symbols = selectedCurrencyCodes
