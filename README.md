@@ -64,14 +64,14 @@ Config/
 
 The Fixer API has a limited request quota on the free plan. The following decisions were made deliberately to minimise consumption:
 
-| Decision | Rationale |
-|---|---|
-| **API key sent via HTTP header** (`apikey`) | Required by Fixer; avoids key leakage in URLs and server logs |
+| Decision                                    | Rationale                                                                                                                                                                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **API key sent via HTTP header** (`apikey`) | Required by Fixer; avoids key leakage in URLs and server logs                                                                                                                                                       |
 | **24-hour cache via `APIRateCacheManager`** | Both `/latest` and `/fluctuation` responses are cached in `UserDefaults` keyed by endpoint + base + symbols. A fresh network call is only made if the cache is older than 24 hours or a force-refresh is triggered. |
-| **Parallel fetch with `async let`** | The `latest` and `fluctuation` requests are dispatched concurrently in `WalletViewModel.fetchRates()`, halving the perceived latency for a two-request flow. |
-| **Guard on BTC amount** | `fetchRates()` exits immediately if `bitcoinAmount == 0`. No API call is made on first launch until the user provides a valid amount. |
-| **Local recalculation on amount change** | BTC amount changes call `calculateValues()` directly — no API round-trip. |
-| **Fluctuation cache keyed by date range** | The fluctuation cache key includes the `start_date` and `end_date` so yesterday/today boundaries are respected without stale data. |
+| **Parallel fetch with `async let`**         | The `latest` and `fluctuation` requests are dispatched concurrently in `WalletViewModel.fetchRates()`, halving the perceived latency for a two-request flow.                                                        |
+| **Guard on BTC amount**                     | `fetchRates()` exits immediately if `bitcoinAmount == 0`. No API call is made on first launch until the user provides a valid amount.                                                                               |
+| **Local recalculation on amount change**    | BTC amount changes call `calculateValues()` directly — no API round-trip.                                                                                                                                           |
+| **Fluctuation cache keyed by date range**   | The fluctuation cache key includes the `start_date` and `end_date` so yesterday/today boundaries are respected without stale data.                                                                                  |
 
 ---
 
@@ -100,12 +100,12 @@ Configured via `FirebaseApp.configure()` in `AppContainer.init()`. Crashlytics r
 
 All persistence is handled through `UserDefaultsManager`, which conforms to the `UserDefaultsManaging` protocol. Persisted values include:
 
-| Key | Value |
-|---|---|
-| `com.bitwallet.btcAmount` | The user's BTC amount (Double) |
-| `com.bitwallet.onboardingCompleted` | Whether the welcome flow has been seen (Bool) |
-| `com.bitwallet.selectedCurrencies` | The user's chosen currency codes ([String]) |
-| `com.bitwallet.lastFetchDate` | Timestamp of the last successful API fetch (Date) |
+| Key                                 | Value                                             |
+| ----------------------------------- | ------------------------------------------------- |
+| `com.bitwallet.btcAmount`           | The user's BTC amount (Double)                    |
+| `com.bitwallet.onboardingCompleted` | Whether the welcome flow has been seen (Bool)     |
+| `com.bitwallet.selectedCurrencies`  | The user's chosen currency codes ([String])       |
+| `com.bitwallet.lastFetchDate`       | Timestamp of the last successful API fetch (Date) |
 
 The `APIRateCacheManager` uses a separate, structured key namespace (`com.bitwallet.rates.<endpoint>.<base>.<symbols>`) so cache data is isolated from user preferences.
 
@@ -152,43 +152,58 @@ The `APIRateCacheManager` uses a separate, structured key namespace (`com.bitwal
 The scope of this assessment is a functional prototype. The following outlines what I would address before shipping to production:
 
 ### Security
+
 - [ ] Move the API key out of the app binary entirely — route requests through a lightweight server-side proxy that holds the secret, so the key is never exposed in the client
 - [ ] Add certificate pinning for the Fixer API domain
 - [ ] Audit `UserDefaults` for anything sensitive; migrate to Keychain if needed
 
 ### Observability
+
 - [ ] Add non-fatal error logging to Crashlytics on network failures and decode errors, with context (endpoint, status code, currency symbol set)
 - [ ] Add a Firebase Performance trace around the API fetch to track p50/p95 latency over time
 - [ ] Set up Crashlytics alert thresholds for crash-free session rate
 
 ### Reliability
+
 - [ ] Add retry logic with exponential backoff for transient network failures
 - [ ] Gracefully degrade when the fluctuation endpoint is unavailable (show rates without indicators rather than failing the whole fetch)
 - [ ] Cache invalidation strategy beyond 24 hours — consider time-zone-aware reset at midnight rather than a fixed interval
 
 ### CI/CD
+
 - [ ] GitHub Actions pipeline: build → test → lint (SwiftLint) → archive
 - [x] `API_TOKEN` stored as a GitHub Actions Environment Secret — injected at build time, never hardcoded or committed
 - [x] Environment-targeted builds triggered via commit message tags — the pipeline reads the tag and selects the matching GitHub Environment, which injects the correct `.env` variables automatically:
 
-  | Commit tag | GitHub Environment | Variables loaded |
-  |---|---|---|
-  | `[ios-prod]` | `ios-prod` | Production API token, base URL, Firebase config |
-  | `[ios-qa]` | `ios-qa` | QA API token, base URL, Firebase config |
-  | `[ios-dev]` | `ios-dev` | Dev API token, base URL, Firebase config |
+  | Commit tag   | GitHub Environment | Variables loaded                                |
+  | ------------ | ------------------ | ----------------------------------------------- |
+  | `[ios-prod]` | `ios-prod`         | Production API token, base URL, Firebase config |
+  | `[ios-qa]`   | `ios-qa`           | QA API token, base URL, Firebase config         |
+  | `[ios-dev]`  | `ios-dev`          | Dev API token, base URL, Firebase config        |
 
   **Example:**
+
   ```
   git commit -m "feat: update currency row layout [ios-qa]"
   ```
+
   This triggers the QA workflow, injecting the `ios-qa` environment secrets without any manual config changes.
 
 - [ ] Automated TestFlight deployment on merge to `main`
 
 ### Scalability
+
 - [ ] Replace `UserDefaults`-based cache with a proper persistence layer (Core Data or SQLite via GRDB) if the currency list or history grows
 - [ ] Support widget extension — the architecture's clean dependency graph makes this straightforward to add
 - [ ] Localisation (`Localizable.strings`) — the app currently uses string literals throughout
+
+---
+
+## Future Features
+
+- [ ] Firebase Login/Logout
+- [ ] Week/Month/Year Graph per Currency Amounts
+- [ ] Profile to persist BTC amount to Firebase
 
 ---
 
@@ -212,4 +227,3 @@ Cape Town, South Africa
 ## 📄 License
 
 This project is for assessment purposes.
-
