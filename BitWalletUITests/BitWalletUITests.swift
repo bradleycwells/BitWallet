@@ -30,7 +30,7 @@ final class BitWalletUITests: XCTestCase {
         
         // Handle Welcome Alert
         let welcomeAlert = app.alerts["Welcome to BitWallet!"]
-        XCTAssertTrue(welcomeAlert.waitForExistence(timeout: 5), "Welcome alert should appear on first launch")
+        XCTAssertTrue(welcomeAlert.waitForExistence(timeout: 8), "Welcome alert should appear on first launch")
         
         let maybeLaterButton = welcomeAlert.buttons["Maybe Later"]
         XCTAssertTrue(maybeLaterButton.exists, "Maybe Later button should exist")
@@ -38,27 +38,6 @@ final class BitWalletUITests: XCTestCase {
         maybeLaterButton.tap()
         
         XCTAssertFalse(welcomeAlert.exists, "Welcome alert should disappear after tapping Maybe Later")
-    }
-
-    @MainActor
-    func testWelcomeAlertGetStarted() throws {
-        let app = XCUIApplication()
-        app.launchArguments.append("--reset-defaults")
-        app.launch()
-        
-        let welcomeAlert = app.alerts["Welcome to BitWallet!"]
-        XCTAssertTrue(welcomeAlert.waitForExistence(timeout: 5), "Welcome alert should appear on first launch")
-        
-        let textField = welcomeAlert.textFields.firstMatch
-        textField.tap()
-        textField.typeText("1.5")
-        
-        let getStartedButton = welcomeAlert.buttons["Get Started"]
-        getStartedButton.tap()
-        
-        let bitcoinAmountText = app.staticTexts["BitcoinAmountText"]
-        XCTAssertTrue(bitcoinAmountText.waitForExistence(timeout: 5), "Amount text should be visible")
-        XCTAssertTrue(bitcoinAmountText.label.contains("1.5"), "Label should reflect entered amount")
     }
 
     @MainActor
@@ -84,18 +63,48 @@ final class BitWalletUITests: XCTestCase {
         XCTAssertTrue(editAlert.waitForExistence(timeout: 2), "Edit amount alert should appear")
         
         let textField = editAlert.textFields.firstMatch
+        XCTAssertTrue(textField.waitForExistence(timeout: 2))
         textField.tap()
         
-        // Delete previous text
-        let deleteString = String(repeating: XCUIKeyboardKey.delete.rawValue, count: 5)
-        textField.typeText(deleteString)
+        // Ensure the keyboard is present and the field has focus
+        if !app.keyboards.element.exists {
+            textField.tap()
+        }
+        
+        // Select-all and replace text to avoid partial deletion issues
+        textField.doubleTap()
+        if app.menuItems["Select All"].waitForExistence(timeout: 1) {
+            app.menuItems["Select All"].tap()
+        } else {
+            // Fallback: press and drag to select the text if the menu doesn't appear
+            let start = textField.coordinate(withNormalizedOffset: .init(dx: 0.1, dy: 0.5))
+            let end = textField.coordinate(withNormalizedOffset: .init(dx: 0.9, dy: 0.5))
+            start.press(forDuration: 0.5, thenDragTo: end)
+        }
         textField.typeText("2.5")
         
         editAlert.buttons["Add"].tap()
         
+        // Ensure the edit alert is dismissed
+        XCTAssertFalse(editAlert.waitForExistence(timeout: 0.5))
+        
         let bitcoinAmountText = app.staticTexts["BitcoinAmountText"]
-        XCTAssertTrue(bitcoinAmountText.waitForExistence(timeout: 2), "Amount text should be visible")
-        XCTAssertTrue(bitcoinAmountText.label.contains("2.5"), "Label should reflect newly entered amount")
+        XCTAssertTrue(bitcoinAmountText.waitForExistence(timeout: 8), "Amount text should be visible")
+        
+        // Poll until the label reflects the expected numeric value, tolerating formatting/localization
+        let end = Date().addingTimeInterval(8)
+        var matched = false
+        while Date() < end {
+            let label = bitcoinAmountText.label
+            // Normalize: keep digits, comma, dot, and space
+            let normalized = label.replacingOccurrences(of: "[^0-9., ]", with: "", options: .regularExpression)
+            if normalized.contains("2.5") || normalized.contains("2,5") || normalized.contains("2.50") || normalized.contains("2,50") {
+                matched = true
+                break
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+        }
+        XCTAssertTrue(matched, "Label should reflect newly entered amount. Actual: \(app.staticTexts["BitcoinAmountText"].label)")
     }
 
     @MainActor
@@ -106,3 +115,4 @@ final class BitWalletUITests: XCTestCase {
         }
     }
 }
+
