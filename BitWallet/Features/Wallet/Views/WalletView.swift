@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseAnalytics
 
 struct WalletView: View {
     @StateObject private var viewModel: WalletViewModel
@@ -61,6 +62,7 @@ struct WalletView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
+                    Analytics.logEvent("add_currency_button_tapped", parameters: nil)
                     isShowingCurrencySelection = true
                 } label: {
                     Image(systemName: "plus.circle.fill")
@@ -87,6 +89,7 @@ struct WalletView: View {
             isPresented: $isShowingWelcomeAlert,
             amount: $tempBitcoinAmount,
             onGetStarted: { value in
+                Analytics.logEvent("welcome_alert_get_started", parameters: nil)
                 viewModel.setOnboardingCompleted()
                 if let value = value, value > 0 {
                     viewModel.bitcoinAmount = value
@@ -96,6 +99,7 @@ struct WalletView: View {
                 }
             },
             onMaybeLater: {
+                Analytics.logEvent("welcome_alert_maybe_later", parameters: nil)
                 viewModel.setOnboardingCompleted()
             }
         )
@@ -103,6 +107,7 @@ struct WalletView: View {
             isPresented: $isShowingEditAlert,
             amount: $tempBitcoinAmount,
             onAdd: { value in
+                Analytics.logEvent("edit_amount_alert_saved", parameters: nil)
                 viewModel.bitcoinAmount = value
             }
         )

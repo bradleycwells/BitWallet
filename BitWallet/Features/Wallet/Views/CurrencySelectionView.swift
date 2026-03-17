@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseAnalytics
 
 struct CurrencySelectionView: View {
     @Environment(\.dismiss) private var dismiss
@@ -41,6 +42,7 @@ struct CurrencySelectionView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
+                        Analytics.logEvent("currency_selection_cancelled", parameters: nil)
                         dismiss()
                     }
                     .font(.headline)
@@ -48,6 +50,9 @@ struct CurrencySelectionView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
+                        Analytics.logEvent("currency_selection_saved", parameters: [
+                            "selected_count": localSelection.count
+                        ])
                         viewModel.updateSelectedCurrencies(Array(localSelection))
                         dismiss()
                     }
@@ -71,6 +76,11 @@ struct CurrencySelectionView: View {
     }
     
     private func toggleCurrency(_ code: CurrencyCode) {
+        Analytics.logEvent("currency_toggled", parameters: [
+            "currency_code": code.rawValue,
+            "was_selected_before": localSelection.contains(code)
+        ])
+        
         if localSelection.contains(code) {
             if localSelection.count > 1 {
                 localSelection.remove(code)
