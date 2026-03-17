@@ -37,6 +37,7 @@ struct CurrencyRowView: View {
             }
         }
         .padding(.vertical, 20)
+        .accessibilityIdentifier("CurrencyRow_\(currency.code.rawValue)")
     }
     
     private func formatCurrency(_ value: Double) -> String {

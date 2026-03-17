@@ -2,6 +2,13 @@ import Foundation
 
 @MainActor
 final class AppContainer {
+    init() {
+        if ProcessInfo.processInfo.arguments.contains("--reset-defaults") {
+            if let bundleID = Bundle.main.bundleIdentifier {
+                UserDefaults.standard.removePersistentDomain(forName: bundleID)
+            }
+        }
+    }
     
     // Core Dependencies
     lazy var apiClient: APIClient = DefaultAPIClient()

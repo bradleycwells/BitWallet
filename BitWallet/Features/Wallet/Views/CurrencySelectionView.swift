@@ -43,8 +43,9 @@ struct CurrencySelectionView: View {
                     // No header needed; searchable will be applied below
                 } else {
                     Section(header: Text("Search")) {
-                        TextField("Search currencies", text: $searchText)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            TextField("Search currencies", text: $searchText)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .accessibilityIdentifier("CurrencySearchField")
                     }
                 }
 
@@ -68,6 +69,7 @@ struct CurrencySelectionView: View {
                         dismiss()
                     }
                     .font(.headline)
+                    .accessibilityIdentifier("CurrencySelectionCancelButton")
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
@@ -76,6 +78,7 @@ struct CurrencySelectionView: View {
                     }
                     .font(.headline)
                     .foregroundColor(.brandPrimary)
+                    .accessibilityIdentifier("CurrencySelectionSaveButton")
                 }
             }
         }
@@ -135,6 +138,7 @@ struct CurrencySelectionRow: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityIdentifier("CurrencyRow_\(code.rawValue)")
     }
 }
 
