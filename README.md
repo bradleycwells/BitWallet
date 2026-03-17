@@ -1,5 +1,5 @@
 
-<img style="align:center" width="300" height="300" alt="appIcon" src="https://github.com/user-attachments/assets/0052e55c-0192-4202-8d1c-de2c0e86febd" />
+<img width="300" height="300" alt="appIcon" src="https://github.com/user-attachments/assets/0052e55c-0192-4202-8d1c-de2c0e86febd" />
 
 # BitWallet
 
