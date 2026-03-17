@@ -34,7 +34,7 @@ final class APIRateCacheManagerTests: XCTestCase {
         
         // Act
         var fetchBlockCalled = false
-        let rates = try await cacheManager.getOrFetchRates(endpoint: endpoint, base: base, symbols: symbols) {
+        let (rates, _) = try await cacheManager.getOrFetchRates(endpoint: endpoint, base: base, symbols: symbols) {
             fetchBlockCalled = true
             return ["USD": 99999.0] // Different rates that should NOT be returned
         }
@@ -62,7 +62,7 @@ final class APIRateCacheManagerTests: XCTestCase {
         
         // Act
         var fetchBlockCalled = false
-        let rates = try await cacheManager.getOrFetchRates(endpoint: endpoint, base: base, symbols: symbols) {
+        let (rates, _) = try await cacheManager.getOrFetchRates(endpoint: endpoint, base: base, symbols: symbols) {
             fetchBlockCalled = true
             return newRates
         }
@@ -85,7 +85,7 @@ final class APIRateCacheManagerTests: XCTestCase {
         
         // Act
         var fetchBlockCalled = false
-        let rates = try await cacheManager.getOrFetchRates(endpoint: endpoint, base: base, symbols: symbols, forceRefresh: true) {
+        let (rates, _) = try await cacheManager.getOrFetchRates(endpoint: endpoint, base: base, symbols: symbols, forceRefresh: true) {
             fetchBlockCalled = true
             return newRates
         }
