@@ -1,3 +1,6 @@
+
+<img width="1024" height="1024" alt="appIcon" src="https://github.com/user-attachments/assets/0052e55c-0192-4202-8d1c-de2c0e86febd" />
+
 # BitWallet
 
 A Bitcoin currency converter for iOS, built with SwiftUI and Swift Concurrency. Connects to the [Fixer API](https://fixer.io) to display live BTC exchange rates across multiple currencies, with price fluctuation indicators, persistent state, Firebase observability, and a clean MVVM architecture designed with production deployment in mind.
