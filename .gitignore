@@ -58,6 +58,7 @@ Carthage/Build/
 
 fastlane/report.xml
 fastlane/Preview.html
+BitWallet/Config/GoogleService-Info.plist
 fastlane/screenshots/**/*.png
 fastlane/test_output
 

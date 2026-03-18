@@ -1,4 +1,3 @@
-
 <img width="300" height="300" alt="appIcon" src="https://github.com/user-attachments/assets/0052e55c-0192-4202-8d1c-de2c0e86febd" />
 
 # BitWallet
@@ -19,6 +18,8 @@ A Bitcoin currency converter for iOS, built with SwiftUI and Swift Concurrency. 
 - **Firebase Analytics** — Key user interactions are tracked with structured, typed events
 - **Firebase Crashlytics** — Crash reporting configured for production monitoring
 - **Unit & UI Tests** — Coverage across the ViewModel, service layer, cache manager, and key UI flows
+
+- **Light & Dark Mode** — Fully supports both light and dark appearance modes, adapting UI colors and assets automatically
 
 ---
 
@@ -136,6 +137,7 @@ The `APIRateCacheManager` uses a separate, structured key namespace (`com.bitwal
 3. **Firebase**
    - The `GoogleService-Info.plist` in `BitWallet/Config/` is gitignored
    - Replace with your own from the Firebase console, or remove the Firebase SDK if not needed for local testing
+   - For the purpose of the assessment, I will provide my GoogleService-Info.plist in the email.
 
 4. **Build & Run**
    - Open `BitWallet.xcodeproj` in Xcode
