@@ -23,6 +23,12 @@ A Bitcoin currency converter for iOS, built with SwiftUI and Swift Concurrency. 
 
 ---
 
+## Walkthrough
+
+https://github.com/user-attachments/assets/85e7eee0-6678-4ec9-96cf-8b6ae6b4cea1
+
+---
+
 ## Architecture
 
 The app follows **MVVM** with a clear separation of concerns across four layers:
