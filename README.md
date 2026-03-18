@@ -140,6 +140,8 @@ The `APIRateCacheManager` uses a separate, structured key namespace (`com.bitwal
 
 > **CI / GitHub Actions** — `API_TOKEN` is stored as a GitHub Actions [Environment Secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) and injected at build time via the `API_TOKEN` environment variable. `AppConfig.swift` reads this automatically; no `LocalConfig.plist` is needed in CI.
 
+> ** LocalConfig.plist ** — For the purpose of the assessment, I will provide my `LocalConfig.plist` in the email.
+
 3. **Firebase**
    - The `GoogleService-Info.plist` in `BitWallet/Config/` is gitignored
    - Replace with your own from the Firebase console, or remove the Firebase SDK if not needed for local testing
