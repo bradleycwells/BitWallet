@@ -143,7 +143,8 @@ The `APIRateCacheManager` uses a separate, structured key namespace (`com.bitwal
 3. **Firebase**
    - The `GoogleService-Info.plist` in `BitWallet/Config/` is gitignored
    - Replace with your own from the Firebase console, or remove the Firebase SDK if not needed for local testing
-   - For the purpose of the assessment, I will provide my GoogleService-Info.plist in the email.
+   
+   - > ** GoogleServices-Info.plist ** — For the purpose of the assessment, I will provide my `GoogleService-Info.plist` in the email.
 
 4. **Build & Run**
    - Open `BitWallet.xcodeproj` in Xcode
