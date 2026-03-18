@@ -138,7 +138,7 @@ The `APIRateCacheManager` uses a separate, structured key namespace (`com.bitwal
    - Fill in `API_BASE_URL` and `API_TOKEN` with your Fixer credentials
    - `LocalConfig.plist` is gitignored and never committed
 
-   > **CI / GitHub Actions** — `API_TOKEN` is stored as a GitHub Actions [Environment Secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) and injected at build time via the `API_TOKEN` environment variable. `AppConfig.swift` reads this automatically; no `LocalConfig.plist` is needed in CI.
+> **CI / GitHub Actions** — `API_TOKEN` is stored as a GitHub Actions [Environment Secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) and injected at build time via the `API_TOKEN` environment variable. `AppConfig.swift` reads this automatically; no `LocalConfig.plist` is needed in CI.
 
 3. **Firebase**
    - The `GoogleService-Info.plist` in `BitWallet/Config/` is gitignored
