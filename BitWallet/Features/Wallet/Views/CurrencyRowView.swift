@@ -5,26 +5,39 @@ struct CurrencyRowView: View {
     
     var body: some View {
         HStack {
-            Text(currency.code.symbol)
-                .font(.title2)
-                .fontWeight(.bold)
-                .frame(width: 40)
+            WSSymbolText(symbol: currency.code.symbol ?? "...")
             
             VStack(alignment: .leading) {
                 Text(currency.code.rawValue)
                     .font(.headline)
+                    .foregroundColor(.brandText)
                 Text("Rate: \(formatCurrency(currency.rate))")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.subheadline)
+                    .foregroundColor(.brandText.opacity(0.6))
             }
             
             Spacer()
             
-            Text(formatCurrency(currency.totalValue))
-                .font(.title3)
-                .fontWeight(.semibold)
+            VStack(alignment: .trailing) {
+                if let fluctuation = currency.fluctuation {
+                    HStack(spacing: 4) {
+                        Image(systemName: fluctuation >= 0 ? "arrow.up" : "arrow.down")
+                            .font(.system(size: 14, weight: .bold))
+                        Text(formatPriceChange(fluctuation))
+                            .font(.subheadline)
+                    }
+                    .foregroundColor(fluctuation >= 0 ? .green : .red)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+                Text(formatCurrency(currency.totalValue))
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.brandText)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 20)
+        .accessibilityIdentifier("CurrencyRow_\(currency.code.rawValue)")
     }
     
     private func formatCurrency(_ value: Double) -> String {
@@ -32,4 +45,13 @@ struct CurrencyRowView: View {
         formatter.currencySymbol = currency.code.symbol
         return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
     }
+    
+    private func formatPriceChange(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 4
+        formatter.positivePrefix = "+"
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    }
 }
+

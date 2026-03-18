@@ -2,72 +2,127 @@ import SwiftUI
 
 struct WalletView: View {
     @StateObject private var viewModel: WalletViewModel
+    @State private var isShowingEditAlert = false
+    @State private var isShowingWelcomeAlert = false
+    @State private var isShowingCurrencySelection = false
+    @State private var tempBitcoinAmount: String = ""
     
     init(viewModel: WalletViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-    
+
     var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                // Input Section
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Your Bitcoin")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    
-                    HStack {
-                        Text("₿")
-                            .font(.largeTitle)
-                            .foregroundColor(.orange)
-                        
-                        TextField("Amount", value: $viewModel.bitcoinAmount, format: .number)
-                            .keyboardType(.decimalPad)
-                            .font(.system(size: 34, weight: .bold))
-                    }
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
+        Group {
+            if #available(iOS 16.0, *) {
+                NavigationStack {
+                    content
                 }
-                .padding(.horizontal)
-                
-                // Conversions List
-                if viewModel.isLoading {
-                    Spacer()
-                    ProgressView("Fetching rates...")
-                    Spacer()
-                } else if let error = viewModel.errorMessage {
-                    Spacer()
-                    VStack {
-                        Image(systemName: "exclamationmark.triangle")
-                            .font(.largeTitle)
-                            .foregroundColor(.red)
-                        Text(error)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                        Button("Retry") {
-                            Task {
-                                await viewModel.fetchRates()
-                            }
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                    Spacer()
-                } else {
-                    List(viewModel.currencyValues) { value in
-                        CurrencyRowView(currency: value)
-                    }
-                    .listStyle(PlainListStyle())
+            } else {
+                NavigationView {
+                    content
                 }
-            }
-            .navigationTitle("BitWallet")
-            .task {
-                await viewModel.fetchRates()
-            }
-            .refreshable {
-                await viewModel.fetchRates()
+                .navigationViewStyle(StackNavigationViewStyle())
             }
         }
     }
+
+    private var content: some View {
+        ZStack {
+            Color.brandBackground.ignoresSafeArea()
+            
+            VStack(spacing: 20) {
+                WalletHeaderView(bitcoinAmount: viewModel.bitcoinAmount) {
+                    showEditView()
+                }
+                
+                if viewModel.isLoading {
+                    WalletLoadingView()
+                } else if let error = viewModel.errorMessage {
+                    WalletErrorView(errorMessage: error) {
+                        Task {
+                            await viewModel.fetchRates()
+                        }
+                    }
+                } else if viewModel.currencyValues.isEmpty && !viewModel.isLoading {
+                    WalletEmptyStateView {
+                        isShowingWelcomeAlert = true
+                    }
+                } else {
+                    WalletListView(
+                        currencyValues: viewModel.currencyValues,
+                        lastFetchDate: viewModel.lastFetchDate
+                    )
+                }
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                LogoView(animate: .constant(false))
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    AnalyticsManager.shared.log(.addCurrencyButtonTapped)
+                    isShowingCurrencySelection = true
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.brandPrimary)
+                }
+                .accessibilityIdentifier("AddCurrencyButton")
+            }
+        }
+        .sheet(isPresented: $isShowingCurrencySelection) {
+            CurrencySelectionView(viewModel: viewModel)
+        }
+        .task {
+            if !viewModel.isOnboardingCompleted {
+                isShowingWelcomeAlert = true
+            } else {
+                await viewModel.fetchRates()
+            }
+        }
+        .refreshable {
+            await viewModel.fetchRates(forceRefresh: true)
+        }
+        .welcomeAlert(
+            isPresented: $isShowingWelcomeAlert,
+            amount: $tempBitcoinAmount,
+            onGetStarted: { value in
+                AnalyticsManager.shared.log(.welcomeAlertGetStarted)
+                viewModel.setOnboardingCompleted()
+                if let value = value, value > 0 {
+                    viewModel.bitcoinAmount = value
+                    Task {
+                        await viewModel.fetchRates()
+                    }
+                }
+            },
+            onMaybeLater: {
+                AnalyticsManager.shared.log(.welcomeAlertMaybeLater)
+                viewModel.setOnboardingCompleted()
+            }
+        )
+        .editAmountAlert(
+            isPresented: $isShowingEditAlert,
+            amount: $tempBitcoinAmount,
+            onAdd: { value in
+                AnalyticsManager.shared.log(.editAmountAlertSaved)
+                viewModel.bitcoinAmount = value
+            }
+        )
+    }
+
+    private func showEditView() {
+        tempBitcoinAmount = String(format: "%.8f", viewModel.bitcoinAmount).replacingOccurrences(of: "0*$", with: "", options: .regularExpression).replacingOccurrences(of: "\\.$", with: "", options: .regularExpression)
+        if tempBitcoinAmount == "0" && viewModel.bitcoinAmount == 0 {
+            tempBitcoinAmount = ""
+        }
+        isShowingEditAlert = true
+    }
+}
+
+#Preview {
+    let container = AppContainer()
+    WalletView(viewModel: container.makeWalletViewModel())
 }
 

@@ -1,0 +1,24 @@
+import SwiftUI
+
+struct SplashScreenView: View {
+    @State private var animate = false
+    @Binding var showSplash: Bool
+    var body: some View {
+        ZStack {
+            Color.brandBackground.ignoresSafeArea()
+            
+            LogoView(animate: $animate, onComplete: {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    showSplash = false
+                }
+            })
+        }
+        .onAppear {
+            animate = true
+        }
+    }
+}
+
+#Preview {
+    SplashScreenView(showSplash: .constant(true))
+}                        
