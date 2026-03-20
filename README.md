@@ -35,27 +35,46 @@ The app follows **MVVM** with a clear separation of concerns across four layers:
 
 ```
 App/
-├── AppContainer.swift          # Dependency injection root (manual DI, no framework)
+├── AppContainer.swift # Dependency injection root (manual DI, no framework)
 ├── BitWalletApp.swift
 
 Features/
 └── Wallet/
-    ├── Views/                  # Decomposed SwiftUI views (WalletView, Header, List, Row, etc.)
-    ├── ViewModels/             # WalletViewModel — the single source of truth for wallet state
-    ├── Models/                 # CurrencyValue, ExchangeRatesResponse, FluctuationResponse
-    └── Services/               # DefaultFixerService + FixerService protocol
+├── Views/ # Decomposed SwiftUI views (WalletView, WalletHeaderView, WalletListView, etc.)
+├── ViewModels/ # WalletViewModel — main wallet state logic
+├── Models/ # CurrencyCode, CurrencyValue, ExchangeRates
+└── Services/ # DefaultFixerService, FixerService protocol
+
+└── SplashScreen/
+└── Views/ # SplashScreenView
 
 Core/
-├── Analytics/                  # AnalyticsManager, AnalyticsEvent enum, AnalyticsService protocol
-├── Data/Cache/                 # APIRateCacheManager — UserDefaults-backed response cache
-├── Networking/                 # APIClient protocol + DefaultAPIClient (URLSession)
-├── Repository/                 # UserDefaultsManager — typed persistence with protocol abstraction
-├── Utils/                      # HapticManager, NumberFormatter extensions, DateProvider
-└── Views/                      # Shared UI components (LogoView, WSSymbolText, WalletAlerts)
+├── Analytics/ # AnalyticsManager
+├── Constants/ # AppConstants, CurrencySymbols
+├── Data/
+│ └── Cache/ # APIRateCacheManager — UserDefaults-backed response cache
+├── Networking/ # APIClient, Endpoint, NetworkError
+├── Repository/ # UserDefaultsManager — typed persistence
+├── Utils/ # HapticManager, NumberFormatter+BTC, DateProvider
+└── Views/ # Shared UI (LogoView, WSSymbolText, WalletAlerts)
 
 Config/
-├── AppConfig.swift             # Reads API base URL + token from LocalConfig or environment variables
-└── LocalConfigSample.plist     # Template for local secrets (not committed)
+├── AppConfig.swift # Reads API base URL + token from LocalConfig or environment variables
+├── GoogleService-Info.plist # Google services config
+├── LocalConfig.plist # Local secrets (not committed)
+├── LocalConfigSample.plist # Template for local secrets
+└── Local​Config​.swift # Local config logic
+
+Resources/
+└── Assets.xcassets/ # App icons, colors, images
+
+BitWallet.xcodeproj # Xcode project files
+
+BitWalletTests/ # Unit tests and mocks
+
+BitWalletUITests/ # UI tests
+
+BrandImages/ # App icon source files
 ```
 
 ### Key Design Decisions
